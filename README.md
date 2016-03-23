@@ -540,7 +540,7 @@ Open a new terminal window/tab (SHIFT+CTRL+TAB in Raspbian)
 
 Make the script executable by typing:
 
-	chmod +x generate.sh
+	chmod +x install-java8.sh
 
 Run the installation script:
 	
