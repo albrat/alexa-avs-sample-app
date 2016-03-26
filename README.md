@@ -219,11 +219,11 @@ Install Node itself:
 You need to have Java Development Kit (JDK) version 8 or higher installed on the Raspberry Pi. 
 
 **Step 1: Download JDK**
-Assuming this is a fresh Raspberry Pi and you do not already have JDK installed, you'll need to download JDK 8 from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html). The binary you are looking for is **Linux ARM 32 Hard Float ABI**.
+Assuming this is a fresh Raspberry Pi and you do not already have JDK installed, you'll need to download JDK 8 from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html). 
 
-Download the tar.gz file jdk-8u73-linux-arm32-vfp-hflt.tar.gz from the Oracle link above.
+- **Raspberry Pi 1 and 2 models** - The binary you are looking for is “Linux ARM 32 Hard Float ABI”. Download the tar.gz file jdk-8u73-linux-arm32-vfp-hflt.tar.gz from the Oracle link above.
+- **Raspberry Pi 3 model** - The binary you are looking for is  “Linux ARM 64 Soft Float ABI”. Download the tar.gz file jdk-8u77-linux-arm64-vfp-hflt.tar.gz from the Oracle link above.
 
-**NOTE**: Although there is a 64-bit ARMv8 that Apple and some other smartphones use, there are no raspberry 64-bit ARM processors on pis yet. More info: [Raspberry Piblog.com](http://www.Raspberry Piblog.com/2014/03/installing-oracle-jdk-8-on-raspberry-pi.html)
 
 **Step 2: Extract the contents**
 Extract the contents of the tarball to the /opt directory:
