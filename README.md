@@ -88,7 +88,7 @@ Now let's SSH into your Raspberry Pi. To do that, you need to know the IP addres
 Type this command into the terminal: 
 
 	hostname -I
-	> 192.168.1.10 //this is an example Raspberry Pi’s hostname, it would be different for you
+	> 192.168.1.10 //this is an example Raspberry Pi’s IP - it would be different for you
 
 If you’re on a Windows PC, follow the instructions here to [SSH Using windows](https://www.raspberrypi.org/documentation/remote-access/ssh/windows.md)
 
