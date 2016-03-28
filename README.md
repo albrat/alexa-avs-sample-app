@@ -222,9 +222,9 @@ You need to have Java Development Kit (JDK) version 8 or higher installed on the
 Assuming this is a fresh Raspberry Pi and you do not already have JDK installed, you'll need to download JDK 8 from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html). 
 
 
-The binary you are looking for is “Linux ARM 32 Hard Float ABI”.
+Download the tar.gz file listed for **Linux ARM 32 Hard Float ABI** from the Oracle link above. At the time of this writing, the name of this file is jdk-8u77-linux-arm32-vfp-hflt.tar.gz.
 
-Download the tar.gz file jdk-8u77-linux-arm32-vfp-hflt.tar.gz from the Oracle link above.
+**NOTE**: Although there is a 64-bit ARMv8 that Apple and some other smartphones use, there are no raspberry 64-bit ARM processors on pis yet. More info: [Raspberry Piblog.com](http://www.rpiblog.com/2014/03/installing-oracle-jdk-8-on-raspberry-pi.html)
 
 
 **Step 2: Extract the contents**
