@@ -224,7 +224,7 @@ Assuming this is a fresh Raspberry Pi and you do not already have JDK installed,
 
 Download the tar.gz file listed for **Linux ARM 32 Hard Float ABI** from the Oracle link above. At the time of this writing, the name of this file is jdk-8u77-linux-arm32-vfp-hflt.tar.gz.
 
-**NOTE**: Although there is a 64-bit ARMv8 that Apple and some other smartphones use, there are no raspberry 64-bit ARM processors on pis yet. More info: [Raspberry Piblog.com](http://www.rpiblog.com/2014/03/installing-oracle-jdk-8-on-raspberry-pi.html)
+**NOTE**: Although there is a 64-bit ARMv8 that Apple and some other smartphones use, there are no raspberry 64-bit ARM processors on pis yet. More info: [Raspberry Pi Blog.com](http://www.rpiblog.com/2014/03/installing-oracle-jdk-8-on-raspberry-pi.html)
 
 
 **Step 2: Extract the contents**
