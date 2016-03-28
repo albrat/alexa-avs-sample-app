@@ -221,25 +221,27 @@ You need to have Java Development Kit (JDK) version 8 or higher installed on the
 **Step 1: Download JDK**
 Assuming this is a fresh Raspberry Pi and you do not already have JDK installed, you'll need to download JDK 8 from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html). 
 
-- **Raspberry Pi 1 and 2 models** - The binary you are looking for is “Linux ARM 32 Hard Float ABI”. Download the tar.gz file jdk-8u73-linux-arm32-vfp-hflt.tar.gz from the Oracle link above.
-- **Raspberry Pi 3 model** - The binary you are looking for is  “Linux ARM 64 Soft Float ABI”. Download the tar.gz file jdk-8u77-linux-arm64-vfp-hflt.tar.gz from the Oracle link above.
+
+The binary you are looking for is “Linux ARM 32 Hard Float ABI”.
+
+Download the tar.gz file jdk-8u77-linux-arm32-vfp-hflt.tar.gz from the Oracle link above.
 
 
 **Step 2: Extract the contents**
 Extract the contents of the tarball to the /opt directory:
 
-	sudo tar zxvf jdk-8u73-linux-arm32-vfp-hflt.tar.gz -C /opt
+	sudo tar zxvf jdk-8u77-linux-arm32-vfp-hflt.tar.gz -C /opt
 	
 Set default java and javac to the new installed jdk8.
 
-	sudo update-alternatives --install /usr/bin/javac javac /opt/jdk1.8.0_73/bin/javac 1
+	sudo update-alternatives --install /usr/bin/javac javac /opt/jdk1.8.0_77/bin/javac 1
 	
-	sudo update-alternatives --install /usr/bin/java java /opt/jdk1.8.0_73/bin/java 1
+	sudo update-alternatives --install /usr/bin/java java /opt/jdk1.8.0_77/bin/java 1
 
 	sudo update-alternatives --config javac
 	sudo update-alternatives --config java
 
-**NOTE**: If asked to choose an alternative, type the number corresponding to the jdk version you just installed - for example - jdk1.8.0_73
+**NOTE**: If asked to choose an alternative, type the number corresponding to the jdk version you just installed - for example - jdk1.8.0_77
 
 Now verify the commands with the -version option:
 
