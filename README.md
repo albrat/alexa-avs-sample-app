@@ -663,11 +663,23 @@ See [Raspberry Pi Audio Configuration](https://www.raspberrypi.org/documentation
 
 ### How do I find the IP address of my Raspberry Pi?
 	
-	hostname -I
-	
+	hostname -I	
+
 ### Unable to fetch errors - 
 If you run into some "Unable to fetch" errors while trying to install VLC, try the following - 	
 
 	sudo apt-get update
 	sudo apt-get upgrade
 	sudo apt-get install vlc-nox vlc-data
+
+### Having issues with npm
+If you run into some "npm not found" errors after installing node (older versions of Raspbian's node), try the following -
+
+	sudo apt-get update
+	sudo apt-get upgrade
+	sudo apt-get install npm
+ 
+### What if I cannot find an ethernet port for the pi?
+
+Check out this url on how to bridge the connection between a laptop's wifi connection and the ethernet port on your pi. 
+https://www.hackster.io/Anwaarullah/sharing-wifi-with-raspberry-pi-using-a-lan-cable-ae1f44
