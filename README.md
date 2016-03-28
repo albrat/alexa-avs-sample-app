@@ -13,7 +13,7 @@ ___
 
 ### Hardware you need
 
-1. **Raspberry Pi 2 (Model B)**  - [Buy at Amazon](http://amzn.com/B00T2U7R7I). **UPDATE**: Even though this guide was built using a Raspberry Pi 2, it should work just fine with a Pi 3 & Pi 1 as well. See [this](https://github.com/amzn/alexa-avs-raspberry-pi/issues/36) and [this](https://github.com/amzn/alexa-avs-raspberry-pi/issues/2).
+1. **Raspberry Pi 2 (Model B)**  - [Buy at Amazon](http://amzn.com/B00T2U7R7I). **UPDATE**: Even though this guide was built using a Raspberry Pi 2, it should work [just fine](https://github.com/amzn/alexa-avs-raspberry-pi/issues/36) with a Raspberry Pi 3 as well. Pi 1 users - please see this thread for [help](https://github.com/amzn/alexa-avs-raspberry-pi/issues/2).
 2. **Micro-USB power cable** for Raspberry Pi (included with Raspberry Pi)
 3. **Micro SD Card** - To get started with Raspberry Pi you need an operating system. NOOBS (New Out Of the Box Software) is an easy-to-use operating system install manager for the Raspberry Pi. The simplest way to get NOOBS is to buy an SD card with NOOBS preinstalled - [Raspberry Pi 8GB Preloaded (NOOBS) Micro SD Card](https://www.amazon.com/gp/product/B00ENPQ1GK/ref=oh_aui_detailpage_o01_s00?ie=UTF8&psc=1) 
 4. An **Ethernet cable**
@@ -683,3 +683,9 @@ If you run into some "npm not found" errors after installing node (older version
 
 Check out this url on how to bridge the connection between a laptop's wifi connection and the ethernet port on your pi. 
 https://www.hackster.io/Anwaarullah/sharing-wifi-with-raspberry-pi-using-a-lan-cable-ae1f44
+
+
+### What does the ssl.cnf file look like?
+https://gist.github.com/ajotwani/a0d54110a968c984fd0b
+
+
