@@ -654,7 +654,7 @@ ___
 
 Check to see if you are seeing the response coming through on the Terminal and if you see the response cards on your Alexa app. If yes, you probably need to force audio through local 3.5mm jack, instead of the HDMI output (this can happen even if you don’t have an HDMI monitor plugged in). 
 
-To force audio through local 3.5 mm jack, pen Terminal, and type
+To force audio through local 3.5 mm jack, open Terminal, and type
 
 	sudo raspi-config 
 
