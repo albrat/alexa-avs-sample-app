@@ -377,7 +377,8 @@ Change directories to \<REFERENCE_IMPLEMENTATION>/samples/javaclient.
 
 **Step 2**: Edit the text file ssl.cnf, which is an SSL configuration file. Fill in appropriate values in place of the placeholder text that starts with YOUR_. 
 
-Note that **countryName** must be two characters. If it is not two characters, certificate creation will fail. 
+Note that **countryName** must be two characters. If it is not two characters, certificate creation will fail. [Here's](https://gist.github.com/ajotwani/a0d54110a968c984fd0b) what the ssl.cnf file would look like, replacing country, state, locality with your respective info. 
+
 
 **Step 3**: Make the certificate generation script executable by typing:
 
@@ -686,6 +687,6 @@ https://www.hackster.io/Anwaarullah/sharing-wifi-with-raspberry-pi-using-a-lan-c
 
 
 ### What does the ssl.cnf file look like?
-https://gist.github.com/ajotwani/a0d54110a968c984fd0b
+[Here's](https://gist.github.com/ajotwani/a0d54110a968c984fd0b) what the ssl.cnf file would look like, replacing country, state, locality with your respective info. 
 
 
