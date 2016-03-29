@@ -1,0 +1,31 @@
+***************
+AVS Sample App
+***************
+
+Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+This product includes software developed by
+Amazon Technologies, Inc (http://www.amazon.com/).
+
+************************************************
+Legal Notices for Certain Third-Party Software
+************************************************
+
+Portions of InputStreamResponseListener.java are available under the Apache License, version 2.0, or the Eclipse Public License.  
+
+************************
+Legal Notices for Jetty
+************************
+
+Jetty Web Container
+
+Copyright 1995-2016 Mort Bay Consulting Pty Ltd.
+
+The Jetty Web Container is Copyright Mort Bay Consulting Pty Ltd unless otherwise noted.
+
+Jetty is dual licensed under both -
+
+- The Apache 2.0 License - http://www.apache.org/licenses/LICENSE-2.0.html, and
+- The Eclipse Public 1.0 License - http://www.eclipse.org/legal/epl-v10.html
+
+Jetty may be distributed under either license.
