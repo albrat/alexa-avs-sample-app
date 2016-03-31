@@ -198,7 +198,7 @@ Type the following into the terminal:
 
 Verify Node isn't already installed. It should print 'command not found'.
 
-	node —version
+	node -v
 	> command not found
 
 Now type: 
