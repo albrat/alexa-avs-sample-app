@@ -281,7 +281,7 @@ Save the file. Log out and back into the Raspberry Pi so the profile script take
 ![](assets/login-amazon-dev-portal.png)
 ### 3.2 Download the sample app code and dependencies on the Raspberry Pi
 
-[Download](https://github.com/amzn/alexa-avs-raspberry-pi.git) the sample apps zip file. By downloading this package, you agree to the [Alexa Voice Service Agreement](https://developer.amazon.com/edw/avs_agreement.html).
+[Download](https://github.com/amzn/alexa-avs-raspberry-pi/archive/master.zip) the sample apps zip file from the [Github repo](https://github.com/amzn/alexa-avs-raspberry-pi.git). By downloading this package, you agree to the [Alexa Voice Service Agreement](https://developer.amazon.com/edw/avs_agreement.html).
 
 ### 3.3 Copy and expand the .zip file on your Raspberry Pi
 
