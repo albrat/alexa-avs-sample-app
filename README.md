@@ -111,6 +111,8 @@ VNC is a graphical desktop sharing system that will allow you to remotely contro
 To start the VNC Server, type: 
 	tightvncserver
 
+You will be asked to set a password to access the Pi. You'll need this when you try to access the Pi from another computer, which we will be doing in a moment. 
+
 **Run VNCServer at Startup**
 
 You want to make sure the VNC Server runs automatically after the Raspberry Pi reboots, so you don’t have to manually start it each time with the command *tightvncserver* through SSH. To do that, type the following in the terminal:
@@ -292,7 +294,7 @@ Save the file. Log out and back into the Raspberry Pi so the profile script take
 
 ### 3.4 Register your product and create a security profile.
 
-1. Login to Amazon Developer Portal - [developer.amazon.com](https://developer.amazon.com/)
+1. Login to Amazon Developer Portal - [developer.amazon.com](https://developer.amazon.com/login.html)
 2. Click on Apps & Services tab -> Alexa -> Alexa Voice Service -> Get Started
 ![](assets/avs-navigation.png)
 3. In the Register a Product Type menu, select **Device**.
