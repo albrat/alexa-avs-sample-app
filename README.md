@@ -492,7 +492,7 @@ Edit the following values in this file:
 - **dsn**: Enter the alphanumeric string that you used for the unique product identifier in the products object in the server's config.js. For example: **123456**.
 - **provisioningMethod**: Enter **companionService**.
 
-![](assets/avs-config.json.png)
+![](assets/avs-config-json.png)
 
 **Save** the file.
 
@@ -690,5 +690,6 @@ https://www.hackster.io/Anwaarullah/sharing-wifi-with-raspberry-pi-using-a-lan-c
 
 ### What does the ssl.cnf file look like?
 [Here's](https://gist.github.com/ajotwani/a0d54110a968c984fd0b) what the ssl.cnf file would look like, replacing country, state, locality with your respective info. 
+
 
 
