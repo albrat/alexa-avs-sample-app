@@ -691,5 +691,20 @@ https://www.hackster.io/Anwaarullah/sharing-wifi-with-raspberry-pi-using-a-lan-c
 ### What does the ssl.cnf file look like?
 [Here's](https://gist.github.com/ajotwani/a0d54110a968c984fd0b) what the ssl.cnf file would look like, replacing country, state, locality with your respective info. 
 
+###  “Cannot connect to the Companion Service” errors
+This could be because of one of 3 things - 
 
 
+1. **Bad certificate** - which could be a result of - 
+	- Bad ssl.cnf file (See FAQ above for what it should look like), 
+	- incorrect java version, 
+	- possibly wrong passphrase in the config.json file, 
+
+
+2. **Incorrect Product id & DSN** - Make sure that these values are the same -
+	- Device Type Info - [Device Type ID](https://github.com/amzn/alexa-avs-raspberry-pi#34-register-your-product-and-create-a-security-profile) on the Amazon Developer Portal
+	- Product ID in SSL cert generation (when prompted by [generate.sh](https://github.com/amzn/alexa-avs-raspberry-pi#4---generate-self-signed-certificates))
+	- Products parameter number 1 in [config.js](https://github.com/amzn/alexa-avs-raspberry-pi#7---updating-the-config-files)
+	- Product ID in [config.json](https://github.com/amzn/alexa-avs-raspberry-pi#7---updating-the-config-files)
+
+3. The Companion Service isn’t actually [running](https://github.com/amzn/alexa-avs-raspberry-pi#8---run-the-server).
