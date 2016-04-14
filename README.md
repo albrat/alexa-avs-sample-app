@@ -167,7 +167,9 @@ If you run into some "Unable to fetch" errors while trying to install VLC, try t
 	sudo apt-get update
 	sudo apt-get upgrade
 	sudo apt-get install vlc-nox vlc-data
-	
+
+NOTE: Running "sudo apt-get upgrade" might take a while. Grab a coffee!
+
 Source: https://www.raspberrypi.org/forums/viewtopic.php?f=66&t=67399
 	
 **Make sure VLC is installed correctly**
@@ -704,7 +706,7 @@ This could be because of one of 3 things -
 2. **Incorrect Product id & DSN** - Make sure that these values are the same -
 	- Device Type Info - [Device Type ID](https://github.com/amzn/alexa-avs-raspberry-pi#34-register-your-product-and-create-a-security-profile) on the Amazon Developer Portal
 	- Product ID in SSL cert generation (when prompted by [generate.sh](https://github.com/amzn/alexa-avs-raspberry-pi#4---generate-self-signed-certificates))
-	- Products parameter number 1 in [config.js](https://github.com/amzn/alexa-avs-raspberry-pi#7---updating-the-config-files)
-	- Product ID in [config.json](https://github.com/amzn/alexa-avs-raspberry-pi#7---updating-the-config-files)
+	- The "key" in the products "key":["value"] pair in [config.js](https://github.com/amzn/alexa-avs-raspberry-pi/blob/master/samples/companionService/config.js)
+	- Product ID in [config.json](https://github.com/amzn/alexa-avs-raspberry-pi/blob/master/samples/javaclient/config.json)
 
 3. The Companion Service isn’t actually [running](https://github.com/amzn/alexa-avs-raspberry-pi#8---run-the-server).
