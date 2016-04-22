@@ -95,7 +95,7 @@ If you’re on a Windows PC, follow the instructions here to [SSH Using windows]
 
 Now that you know the IP address of your Raspberry Pi, you are ready to connect to it remotely using SSH. To do this, open the terminal utility on the computer you would like to connect from and type the following:
 
-	pi@<YOUR Raspberry Pi IP ADDRESS>
+	ssh pi@<YOUR Raspberry Pi IP ADDRESS>
 
 It will prompt you for your password. *NOTE*: the default password for the user pi is **raspberry**
 
