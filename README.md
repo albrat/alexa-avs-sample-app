@@ -543,27 +543,6 @@ Open a new terminal window/tab (SHIFT+CTRL+TAB in Raspbian)
 
 	cd <REFERENCE_IMPLEMENTATION>/samples/javaclient
 
-
-**Upgrade your Java version**
-
-Make the script executable by typing:
-
-	chmod +x install-java8.sh
-
-Run the installation script:
-	
-	./install-java8.sh
-
-![](assets/avs-upgrade-java.png)
-
-![](assets/java-installation-tos-1.png)
-
-You will get a message from Oracle Java installer that you must accept the Terms of Service for Java SE Platform, press Enter.
-
-![](assets/java-installation-tos-2.png)
-
-Press **Tab**, and then **Enter** to say “**Yes**” to the Terms of Service.
-
 **Build the app**
 
 Before you build the app, let’s validate to make sure the project is correct and that all necessary information is available. You do that by running:
