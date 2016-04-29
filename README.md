@@ -537,11 +537,10 @@ ___
 
 ## 9 - Start the client
 
-Open a new terminal window/tab (SHIFT+CTRL+TAB in Raspbian)
+Open a new terminal window/tab (SHIFT+CTRL+TAB in Raspbian) and navigate to:
+	cd <REFERENCE_IMPLEMENTATION>/samples/javaclient 
 
 ![](assets/start-client.png)
-
-	cd <REFERENCE_IMPLEMENTATION>/samples/javaclient
 
 **Build the app**
 
