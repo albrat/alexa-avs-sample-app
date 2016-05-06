@@ -1,17 +1,17 @@
 {
-    "productId":"",
-    "dsn":"",
-    "provisioningMethod":"",
+    "productId":"my_device",
+    "dsn":"123456",
+    "provisioningMethod":"companionService",
     "companionApp":{
         "localPort":8443,
-        "sslKeyStore":"",
+        "sslKeyStore":"/home/pi/Desktop/samples/javaclient/certs/server/jetty.pkcs12",
         "sslKeyStorePassphrase":"",
         "lwaUrl":"https://api.amazon.com"
     },
     "companionService":{
         "serviceUrl":"https://localhost:3000",
-        "sslClientKeyStore":"",
+        "sslClientKeyStore":"/home/pi/Desktop/samples/javaclient/certs/client/client.pkcs12",
         "sslClientKeyStorePassphrase":"",
-        "sslCaCert":""
+        "sslCaCert":"/home/pi/Desktop/samples/javaclient/certs/ca/ca.crt"
     }
 }
