@@ -31,12 +31,16 @@ ___
 
 * You are using a Raspberry Pi 2 or 3
 * You are running Raspbian Jessie
-* Your Product ID / Device Type ID is `my_device`. **Note**: If you use a different name you will need to manually update the following files:
+* Your Product ID / Device Type ID is `my_device`. 
+	**Note**: If you use a different name you will need to manually update the following files:
+
 	* `config.js`
 	* `config.json`
 * Your project location is `/home/pi/Desktop/`
 * Your DSN is `123456`
-* Your passphrase is blank. If you choose to use a passphrase, you will need to manually update:
+* Your passphrase is blank. 
+	**Note**: If you choose to use a passphrase, you will need to manually update:
+	
 	* config.json
 
 ---
