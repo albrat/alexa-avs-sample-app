@@ -27,6 +27,18 @@ ___
 1. Basic programming experience
 2. Familiarity with shell
 
+### Assumptions
+
+* You are using a Raspberry Pi 2 or 3
+* You are running Raspbian Jessie
+* Your Product ID / Device Type ID is `my_device`. **Note**: If you use a different name you will need to manually update the following files:
+	* `config.js`
+	* `config.json`
+* Your project location is `/home/pi/Desktop/`
+* Your DSN is `123456`
+* Your passphrase is blank. If you choose to use a passphrase, you will need to manually update:
+	* config.json
+
 ---
 
 ##  0 - Setting up the Raspberry Pi
@@ -290,8 +302,7 @@ Save the file. Log out and back into the Raspberry Pi so the profile script take
 
 ### 3.3 Copy and expand the .zip file on your Raspberry Pi
 
-1. Unless you downloaded the zip file on your Raspberry Pi directly, copy and then expand the zip file on your Raspberry Pi. 
-2. Make note of its location on your Raspberry Pi. Further instructions will refer to this location as \<REFERENCE_IMPLEMENTATION>
+1. Unless you downloaded the zip file on your Raspberry Pi directly, copy and then expand the zip file on your Raspberry Pi to `/home/pi/Desktop/`. 
 
 ![](assets/sample-code-file-list.png)
 
@@ -375,59 +386,23 @@ ___
 	whereis openssl
 	> openssl: /usr/bin/openssl /usr/share/man/man1/openssl.lssl.gz
 
-Change directories to \<REFERENCE_IMPLEMENTATION>/samples/javaclient.
+Change directories to /home/pi/Desktop/samples/javaclient.
 
-	cd <REFERENCE_IMPLEMENTATION>/samples/javaclient - //your sample apps location
+	cd /home/pi/Desktop/samples/javaclient - //your sample apps location
 
-
-**Step 2**: Edit the text file ssl.cnf, which is an SSL configuration file. Fill in appropriate values in place of the placeholder text that starts with YOUR_. 
-
-Note that **countryName** must be two characters. If it is not two characters, certificate creation will fail. [Here's](https://gist.github.com/ajotwani/a0d54110a968c984fd0b) what the ssl.cnf file would look like, replacing country, state, locality with your respective info. 
-
-
-**Step 3**: Make the certificate generation script executable by typing:
+**Step 2**: Make the certificate generation script executable by typing:
 
 	chmod +x generate.sh
 
-**Step 4**: Run the certificate generation script:
+**Step 3**: Run the certificate generation script:
 	
 	./generate.sh
 	
-**Step 5**: You will be prompted for some information:
+**Step 4**: You will be prompted for some information:
 
 1. When prompted for a product ID, enter **my_device**
-2. When prompted for a serial number, enter **123456**
-3. When prompted for a password, enter any password and remember what you entered 
-	1. Password: **talktome** (you can even leave it blank)
-
-
-**Step 6: Edit the configuration file for the Node.js server**  
-
-The configuration file is located at: 
-
-	<REFERENCE_IMPLEMENTATION>/samples/companionService/config.js. 
-
-Make the following changes:
-
-- Set **sslKey** to \<REFERENCE_IMPLEMENTATION>/samples/javaclient/certs/server/node.key
-- Set **sslCert** to \<REFERENCE_IMPLEMENTATION>/samples/javaclient/certs/server/node.crt
-- Set **sslCaCert** to \<REFERENCE_IMPLEMENTATION>/samples/javaclient/certs/ca/ca.crt
-
-**IMP**: **Do not** use **~** to denote the home directory. Use the absolute path instead. So, instead of ~/documents/samples, use /home/pi/documents/samples.
-
-**Step 7: Edit the configuration file for the Java client** 
-
-The configuration file is located at: 
-
-	<REFERENCE_IMPLEMENTATION>/samples/javaclient/config.json. 
-
-Make the following changes:
-
-- Set **companionApp.sslKeyStore** to \<REFERENCE_IMPLEMENTATION>/samples/javaclient/certs/server/jetty.pkcs12
-- Set **companionApp.sslKeyStorePassphrase** to the passphrase entered in the certificate generation script in step 5 above.
-- Set **companionService.sslClientKeyStore** to \<REFERENCE_IMPLEMENTATION>/samples/javaclient/certs/client/client.pkcs12
-- Set **companionService.sslClientKeyStorePassphrase** to the passphrase entered in the certificate generation script in step 5 above.
-- Set **companionService.sslCaCert** to \<REFERENCE_IMPLEMENTATION>/samples/javaclient/certs/ca/ca.crt
+2. When prompted for a serial number (DSN), enter **123456**
+3. When prompted for a password, enter any password and remember what you entered. **Note**: We recommend leaving this blank.
 
 ---
 
@@ -435,7 +410,7 @@ Make the following changes:
 
 Change directories to \<REFERENCE_IMPLEMENTATION>/samples/companionService
 
-	cd <REFERENCE_IMPLEMENTATION>/samples/companionService
+	cd /home/pi/Desktop/samples/companionService
 
 Install the dependencies by typing:
 
@@ -469,54 +444,18 @@ Navigate to the following file and open it in a text editor.
 
 -
 
-	<REFERENCE_IMPLEMENTATION>/samples/companionService/config.js 	
+	/home/pi/Desktop/samples/companionService/config.js 	
 
 ![](assets/rpi-open-text-editor.png)
 Edit the following values in this file -
 
 - **clientId**: Paste in the client ID that you noted in the previous step as a string.
 - **clientSecret**: Paste in the client secret that you noted in the previous step as a string.
-- **products**: The product's object consists of a key that should be the same as the product type ID that you set up in the developer portal and a value that is an array of unique product identifiers. If you followed the instructions above, the product type ID should be my_device. The unique product identifier can be any alphanumeric string, such as 123456. Example products JSON is: `products: {"my_device": ["123456"]}`
 
 ![](assets/avs-config.js.png)
 
 **Save** the file.
 
-**Step 2: Update config.json**
-Navigate to the following file, and open it in  a text editor.
-
--
-
-	<REFERENCE_IMPLEMENTATION>/samples/javaclient/config.json	
-
-Edit the following values in this file:
-
-- **productId**: Enter **my_device** as a string.
-- **dsn**: Enter the alphanumeric string that you used for the unique product identifier in the products object in the server's config.js. For example: **123456**.
-- **provisioningMethod**: Enter **companionService**.
-
-![](assets/avs-config-json.png)
-
-**Save** the file.
-
-**Step 3: Preparing the pom.xml file**
-
-Navigate to the following file and open it in a text editor.
-
--
-
-	<REFERENCE_IMPLEMENTATION>/samples/javaclient/pom.xml	
-
-Add the following to the pom.xml in the **< dependencies >** section:
-
-	<dependency>
-	  <groupId>net.java.dev.jna</groupId>
-	  <artifactId>jna</artifactId>
-	  <version>4.1.0</version>
-	  <scope>compile</scope>
-	</dependency>
-
-![](assets/avs-pom-xml.png)
 ___
 
 ## 8 - Run the server
@@ -525,7 +464,7 @@ ___
 
 In your terminal window or from the command prompt, type: 
 
-	cd <REFERENCE_IMPLEMENTATION>/samples/companionService
+	cd /home/pi/Desktop/samples/companionService
 	npm start
 
 ![](assets/start-server.png)
@@ -539,7 +478,7 @@ ___
 
 Open a new terminal window/tab (SHIFT+CTRL+TAB in Raspbian) and navigate to:
 
-	cd <REFERENCE_IMPLEMENTATION>/samples/javaclient 
+	cd /home/pi/Desktop/samples/javaclient 
 
 ![](assets/start-client.png)
 
