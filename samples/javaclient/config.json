@@ -4,14 +4,14 @@
     "provisioningMethod":"companionService",
     "companionApp":{
         "localPort":8443,
-        "sslKeyStore":"/home/pi/Desktop/samples/javaclient/certs/server/jetty.pkcs12",
+        "sslKeyStore":"/home/pi/Desktop/alexa-avs-raspberry-pi/samples/javaclient/certs/server/jetty.pkcs12",
         "sslKeyStorePassphrase":"",
         "lwaUrl":"https://api.amazon.com"
     },
     "companionService":{
         "serviceUrl":"https://localhost:3000",
-        "sslClientKeyStore":"/home/pi/Desktop/samples/javaclient/certs/client/client.pkcs12",
+        "sslClientKeyStore":"/home/pi/Desktop/alexa-avs-raspberry-pi/samples/javaclient/certs/client/client.pkcs12",
         "sslClientKeyStorePassphrase":"",
-        "sslCaCert":"/home/pi/Desktop/samples/javaclient/certs/ca/ca.crt"
+        "sslCaCert":"/home/pi/Desktop/alexa-avs-raspberry-pi/samples/javaclient/certs/ca/ca.crt"
     }
 }

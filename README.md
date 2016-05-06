@@ -35,7 +35,7 @@ ___
 	**Note**: If you use a different name you will need to manually update the following files:
 	* `config.js`
 	* `config.json`
-* Your project location is `/home/pi/Desktop/`
+* Your project location is `/home/pi/Desktop/alexa-avs-raspberry-pi/`
 * Your DSN is `123456`
 * Your passphrase is blank. 
 	**Note**: If you choose to use a passphrase, you will need to manually update:
@@ -304,7 +304,7 @@ Save the file. Log out and back into the Raspberry Pi so the profile script take
 
 ### 3.3 Copy and expand the .zip file on your Raspberry Pi
 
-1. Unless you downloaded the zip file on your Raspberry Pi directly, copy and then expand the zip file on your Raspberry Pi to `/home/pi/Desktop/`. 
+1. Unless you downloaded the zip file on your Raspberry Pi directly, copy and then expand the zip file on your Raspberry Pi to `/home/pi/Desktop/alexa-avs-raspberry-pi/`. 
 
 ![](assets/sample-code-file-list.png)
 
@@ -388,9 +388,9 @@ ___
 	whereis openssl
 	> openssl: /usr/bin/openssl /usr/share/man/man1/openssl.lssl.gz
 
-Change directories to /home/pi/Desktop/samples/javaclient.
+Change directories to /home/pi/Desktop/alexa-avs-raspberry-pi/samples/javaclient.
 
-	cd /home/pi/Desktop/samples/javaclient - //your sample apps location
+	cd /home/pi/Desktop/alexa-avs-raspberry-pi/samples/javaclient - //your sample apps location
 
 **Step 2**: Make the certificate generation script executable by typing:
 
@@ -410,9 +410,9 @@ Change directories to /home/pi/Desktop/samples/javaclient.
 
 ## 5 - Install the dependencies
 
-Change directories to \<REFERENCE_IMPLEMENTATION>/samples/companionService
+Change directories to /home/pi/Desktop/alexa-avs-raspberry-pi/samples/companionService
 
-	cd /home/pi/Desktop/samples/companionService
+	cd /home/pi/Desktop/alexa-avs-raspberry-pi/samples/companionService
 
 Install the dependencies by typing:
 
@@ -446,7 +446,7 @@ Navigate to the following file and open it in a text editor.
 
 -
 
-	/home/pi/Desktop/samples/companionService/config.js 	
+	/home/pi/Desktop/alexa-avs-raspberry-pi/samples/companionService/config.js 	
 
 ![](assets/rpi-open-text-editor.png)
 Edit the following values in this file -
@@ -466,7 +466,7 @@ ___
 
 In your terminal window or from the command prompt, type: 
 
-	cd /home/pi/Desktop/samples/companionService
+	cd /home/pi/Desktop/alexa-avs-raspberry-pi/samples/companionService
 	npm start
 
 ![](assets/start-server.png)
@@ -480,7 +480,7 @@ ___
 
 Open a new terminal window/tab (SHIFT+CTRL+TAB in Raspbian) and navigate to:
 
-	cd /home/pi/Desktop/samples/javaclient 
+	cd /home/pi/Desktop/alexa-avs-raspberry-pi/samples/javaclient 
 
 ![](assets/start-client.png)
 
