@@ -631,3 +631,13 @@ This could be because of one of 3 things -
 	- the "value" in the products "key":["value"] pair in [config.js](https://github.com/amzn/alexa-avs-raspberry-pi/blob/master/samples/companionService/config.js)
 	
 4. The Companion Service isn’t actually [running](https://github.com/amzn/alexa-avs-raspberry-pi#8---run-the-server).
+
+___
+
+## 12 - Release Notes
+
+### (2016/05/17)
+
+* Reduced total number of steps to complete project.
+* Hardcoded certificate paths.
+* Included instructions for matching ALPN and JDK versions.
