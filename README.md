@@ -441,10 +441,7 @@ ___
 
 **Login to the Raspberry Pi via VNC**
 
-**Step 1: Update config.js**
 Navigate to the following file and open it in a text editor.
-
--
 
 	/home/pi/Desktop/alexa-avs-raspberry-pi/samples/companionService/config.js 	
 
