@@ -259,6 +259,10 @@ Now verify the commands with the -version option:
 	java -version
 	javac -version
 
+*Step 4: Check your JDK and ALPN versions match**
+
+In a text editor, open `pom.xml` and locate `<alpn-boot.version>xxx</alpn-boot.version>`. Confirm the ALPN version matches your JDK version using the table located at [eclipse.org/jetty](http://www.eclipse.org/jetty). If the versions match no further action is required. If the versions **do not** match, update the `pom.xml` file with the corret ALPN version and save.
+
 ### 2.7 Install Maven
 
 **Step 1: Download Maven** 
@@ -484,8 +488,6 @@ When the installation is completed, you will see a “Build Success” message i
 ![](assets/mvn-install-success.png)
 
 **Run the client app**:
-
-In a text editor, open `/samples/javaclient/pom.xml` and locate `<alpn-boot.version>xxx</alpn-boot.version>`. Confirm the ALPN version matches your JDK version using the table located at [eclipse.org/jetty](http://www.eclipse.org/jetty). If the versions match no further action is required. If the versions **do not** match, update the `pom.xml` file with the corret ALPN version and save.
 
 You are now ready to run the client app by typing:
 
