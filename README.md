@@ -236,12 +236,13 @@ Install Node itself:
 
 ### 2.6 Install Java Development Kit
 
-You need to have Java Development Kit (JDK) version 8 or higher installed on the Raspberry Pi. 
+You need to have Java Development Kit (JDK) version 8 or higher installed on the Raspberry Pi. To make things easier, we've included a script that will install the latest version of JSK on your Pi and remove older JDK versions. 
 
 **Step 1: Make the script executable**
 
 Make the script executable by typing:
-	chmod +x generate.sh
+
+	chmod +x install-java8.sh
 
 **Step 2: Run the script**
 
@@ -249,15 +250,7 @@ Run the installation script:
 
 	./install-java8.sh
 
-![](avs-upgrade-java.png)
-
-![](java-installation-tos-1.png)
-
-You will get a message from Oracle Java installer that you must accept the Terms of Service for Java SE Platform, press Enter.
-
-![](java-installation-tos-2.png)
-
-Press **Tab**, and then **Enter** to say “**Yes**” to the Terms of Service.
+You will get a message from Oracle Java installer that you must accept the Terms of Service for Java SE Platform, press Enter. Then, press **Tab**, and then **Enter** to say “**Yes**” to the Terms of Service.
 
 **Step 3: Verify your version of JDK**
 
