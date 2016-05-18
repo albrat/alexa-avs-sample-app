@@ -13,7 +13,8 @@ ___
 
 ### Hardware you need
 
-1. **Raspberry Pi 2 (Model B)**  - [Buy at Amazon](http://amzn.com/B00T2U7R7I). **UPDATE**: Even though this guide was built using a Raspberry Pi 2, it should work [just fine](https://github.com/amzn/alexa-avs-raspberry-pi/issues/36) with a Raspberry Pi 3 as well. Pi 1 users - please see this thread for [help](https://github.com/amzn/alexa-avs-raspberry-pi/issues/2).
+1. **Raspberry Pi 2 (Model B)**  - [Buy at Amazon](http://amzn.com/B00T2U7R7I).   
+	**UPDATE**: Even though this guide was built using a Raspberry Pi 2, it should work [just fine](https://github.com/amzn/alexa-avs-raspberry-pi/issues/36) with a Raspberry Pi 3 as well. Pi 1 users - please see this thread for [help](https://github.com/amzn/alexa-avs-raspberry-pi/issues/2).
 2. **Micro-USB power cable** for Raspberry Pi (included with Raspberry Pi)
 3. **Micro SD Card** - To get started with Raspberry Pi you need an operating system. NOOBS (New Out Of the Box Software) is an easy-to-use operating system install manager for the Raspberry Pi. The simplest way to get NOOBS is to buy an SD card with NOOBS preinstalled - [Raspberry Pi 8GB Preloaded (NOOBS) Micro SD Card](https://www.amazon.com/gp/product/B00ENPQ1GK/ref=oh_aui_detailpage_o01_s00?ie=UTF8&psc=1) 
 4. An **Ethernet cable**
@@ -31,13 +32,13 @@ ___
 
 * You are using a Raspberry Pi 2 or 3
 * You are running Raspbian Jessie
-* Your Product ID / Device Type ID is `my_device`. 
+* Your Product ID / Device Type ID is `my_device`.   
 	**Note**: If you use a different name you will need to manually update the following files:
 	* `config.js`
 	* `config.json`
 * Your project location is `/home/pi/Desktop/alexa-avs-raspberry-pi/`
 * Your DSN is `123456`
-* Your passphrase is blank. 
+* Your passphrase is blank.   
 	**Note**: If you choose to use a passphrase, you will need to manually update:
 	* `config.json`
 
@@ -237,30 +238,28 @@ Install Node itself:
 
 You need to have Java Development Kit (JDK) version 8 or higher installed on the Raspberry Pi. 
 
-**Step 1: Download JDK**
-Assuming this is a fresh Raspberry Pi and you do not already have JDK installed, you'll need to download JDK 8 from [Oracle](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html). 
+**Step 1: Make the script executable**
 
+Make the script executable by typing:
+	chmod +x generate.sh
 
-Download the tar.gz file listed for **Linux ARM 32 Soft/Hard Float ABI** from the Oracle link above (Oracle seems to keep changing the name of this file alternating between Soft/Hard every couple weeks. They are both essentially the same, and should both work just fine). Also, just to be clear, you want to download the Java SE Development Kit, **not** the Java SE Development Kit Demos and Samples. At the time of this writing, the name of this file is jdk-8u77-linux-arm32-vfp-hflt.tar.gz.
+**Step 2: Run the script**
 
-**NOTE**: Although there is a 64-bit ARMv8 that Apple and some other smartphones use, there are no raspberry 64-bit ARM processors on pis yet. More info: [Raspberry Pi Blog.com](http://www.rpiblog.com/2014/03/installing-oracle-jdk-8-on-raspberry-pi.html)
+Run the installation script:
 
+	./install-java8.sh
 
-**Step 2: Extract the contents**
-Extract the contents of the tarball to the /opt directory:
+![](avs-upgrade-java.png)
 
-	sudo tar zxvf jdk-8u77-linux-arm32-vfp-hflt.tar.gz -C /opt
-	
-Set default java and javac to the new installed jdk8.
+![](java-installation-tos-1.png)
 
-	sudo update-alternatives --install /usr/bin/javac javac /opt/jdk1.8.0_77/bin/javac 1
-	
-	sudo update-alternatives --install /usr/bin/java java /opt/jdk1.8.0_77/bin/java 1
+You will get a message from Oracle Java installer that you must accept the Terms of Service for Java SE Platform, press Enter.
 
-	sudo update-alternatives --config javac
-	sudo update-alternatives --config java
+![](java-installation-tos-2.png)
 
-**NOTE**: If asked to choose an alternative, type the number corresponding to the jdk version you just installed - for example - jdk1.8.0_77
+Press **Tab**, and then **Enter** to say “**Yes**” to the Terms of Service.
+
+**Step 3: Verify your version of JDK**
 
 Now verify the commands with the -version option:
 
