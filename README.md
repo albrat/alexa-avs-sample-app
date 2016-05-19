@@ -500,9 +500,9 @@ You are now ready to run the client app by typing:
 
 	*Please register your device by visiting the following website on any system and following the instructions: https://localhost:3000/provision/d340f629bd685deeff28a917 Hit OK once completed*.
 
-	![](assets/avs-client-running.png)
-
 	**DO NOT CLICK OK**
+
+	![](assets/avs-client-running.png)	
 
 	**Copy** the URL from the popup window and **paste** it into a **web browser**. In this example, the URL to copy and paste is https://localhost:3000/provision/d340f629bd685deeff28a917. 
 
