@@ -502,6 +502,8 @@ You are now ready to run the client app by typing:
 
 	![](assets/avs-client-running.png)
 
+	**DO NOT CLICK OK**
+
 	**Copy** the URL from the popup window and **paste** it into a **web browser**. In this example, the URL to copy and paste is https://localhost:3000/provision/d340f629bd685deeff28a917. 
 
 	![](assets/paste-url-browser.png)
