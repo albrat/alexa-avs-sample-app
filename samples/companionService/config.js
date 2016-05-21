@@ -20,9 +20,9 @@ var config = {
     lwaRedirectHost: 'amazon.com',
     lwaApiHost: 'api.amazon.com',
     validateCertChain: true,
-    sslKey: '/home/pi/Desktop/alexa-avs-raspberry-pi/samples/javaclient/certs/server/node.key',
-    sslCert: '/home/pi/Desktop/alexa-avs-raspberry-pi/samples/javaclient/certs/server/node.crt',
-    sslCaCert: '/home/pi/Desktop/alexa-avs-raspberry-pi/samples/javaclient/certs/ca/ca.crt',
+    sslKey: '/home/pi/Desktop/alexa-avs-raspberry-pi/samples-master/javaclient/certs/server/node.key',
+    sslCert: '/home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient/certs/server/node.crt',
+    sslCaCert: '/home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient/certs/ca/ca.crt',
     products: {
         "my_device": ["123456"], // Fill in with valid device values, eg: "testdevice1": ["DSN1234", "DSN5678"]
     },
