@@ -13,15 +13,15 @@ ___
 
 ### Hardware you need
 
-1. **Raspberry Pi 2 (Model B)**  - [Buy at Amazon](http://amzn.com/B00T2U7R7I).   
-	**UPDATE**: Even though this guide was built using a Raspberry Pi 2, it should work [just fine](https://github.com/amzn/alexa-avs-raspberry-pi/issues/36) with a Raspberry Pi 3 as well. Pi 1 users - please see this thread for [help](https://github.com/amzn/alexa-avs-raspberry-pi/issues/2).
+1. **Raspberry Pi 3 or Pi 2 (Model B)**  - Buy at Amazon - [Pi 3](https://amzn.com/B01CD5VC92) or [Pi 2](http://amzn.com/B00T2U7R7I).
+	**UPDATE**: Even though this guide was built using a Raspberry Pi 3, it should work just fine with a Raspberry Pi 2 as well. Pi 1 users - please see this thread for [help](https://github.com/amzn/alexa-avs-raspberry-pi/issues/2).
 2. **Micro-USB power cable** for Raspberry Pi (included with Raspberry Pi)
 3. **Micro SD Card** - To get started with Raspberry Pi you need an operating system. NOOBS (New Out Of the Box Software) is an easy-to-use operating system install manager for the Raspberry Pi. The simplest way to get NOOBS is to buy an SD card with NOOBS preinstalled - [Raspberry Pi 8GB Preloaded (NOOBS) Micro SD Card](https://www.amazon.com/gp/product/B00ENPQ1GK/ref=oh_aui_detailpage_o01_s00?ie=UTF8&psc=1). Alternatively, you can download it and install it on the SD card (follow instructions below).
 4. An **Ethernet cable**
 5. **USB 2.0 Mini Microphone** - Raspberry Pi does not have a built-in microphone; to interact with Alexa you'll need an external one to plug in - [Buy at Amazon](http://amzn.com/B00IR8R7WQ)
 6. **External Speaker** with 3.5mm audio socket/stereo headset jack - [Buy at Amazon](http://amzn.com/B007OYAVLI)
 7. A **USB Keyboard & Mouse**, and an external **HDMI Monitor** - we also recommend having a USB keyboard and mouse as well as an HDMI monitor handy if for some reason you can’t “SSH” into your Raspberry Pi. More on “SSH” later.
-8. WiFi Wireless Adapter (Optional) [Buy at Amazon](http://www.amazon.com/CanaKit-Raspberry-Wireless-Adapter-Dongle/dp/B00GFAN498/)
+8. WiFi Wireless Adapter (Optional) Note that this is relevant only for Pi 2. Pi 3 has built-in WiFi module. [Buy at Amazon](http://www.amazon.com/CanaKit-Raspberry-Wireless-Adapter-Dongle/dp/B00GFAN498/)
 
 ### Skills you need
 
@@ -31,36 +31,40 @@ ___
 ### Assumptions
 This guide is based on [Convention over configuration](https://en.wikipedia.org/wiki/Convention_over_configuration) paradigm, which means that we’ve tried to reduce the number of decisions that you as a developer would need to make to get a basic version of Raspberry Pi working with Alexa, by hard coding most of the configurations. Here are some assumptions we’ve made while doing that - 
 
-* You are using a Raspberry Pi 2 or 3
-* You are running Raspbian Jessie
-* Your Product ID / Device Type ID is `my_device`
-	**Note**: If you use a different name you will need to manually update the following files:
-	* `config.js`
-	* `config.json`
-* Your project location is `/home/pi/Desktop/alexa-avs-raspberry-pi-master/`
-* Your DSN is `123456`
-* Your passphrase is blank.   
-	**Note**: If you choose to use a passphrase, you will need to manually update:
-	* `config.json`
+
+- Hardware - You are using a Raspberry Pi 2 or 3
+- OS - You are running Raspbian Jessie
+- Naming conventions
+	- Location: The location of your project files is `/home/pi/Desktop/alexa-avs-raspberry-pi-master/`
+	- Product ID: `my_device`.
+	- DSN: `123456`
+	- Passphrase: blank
+
+	**Note**: If you do not follow the above conventions that are assumed for this project, you’d need to manually update the following files:
+	- `config.js` - location, product id, DSN
+	- `config.json` - location, passphrase
 
 ---
 
 ##  0 - Setting up the Raspberry Pi
+
 ![](assets/raspberry-pi-b-plus3info.jpg)
 
-The first thing we’ll need to do is install Raspbian Jessie on our Pi. The easiest way to do that is by downloading NOOBS. NOOBS is an easy operating system installer which contains Raspbian
+The first thing we’ll need to do is install *Raspbian Jessie* on our Pi. The easiest way to do that is by downloading **NOOBS**. 
 
-NOTE: If you already have Raspbian Jessie installed, skip to step [TODO - add step number] 
+**What is NOOBS**? NOOBS is an easy operating system installer which contains Raspbian. It also provides a selection of alternative operating systems which are then downloaded from the internet and installed.
 
-NOTE: If you bought a micro SD card with NOOBS pre-installed on it, make sure it has Raspbian Jessie available as one of the options. 
+NOTE: If you already have Raspbian Jessie installed on your Pi, you may skip to *Step 2 - Installing utilities - SSH, VNC Server, VLC, Node* below.
 
-### Downloading NOOBS
+### 0.1 - Downloading NOOBS
+
+**NOTE**: If you have a micro SD card that came with NOOBS pre-installed, make sure it has *Raspbian Jessie* available as one of the install options. If not, follow the steps below to download the latest version of NOOBS.
 
 - Download the NOOBS zip file at raspberrypi.org/downloads/noobs(https://www.raspberrypi.org/downloads/noobs/) 
 - Format the SD card using SD Formatter
 - Drag and drop NOOBS files - Once your SD card has been formatted, drag all the files in the extracted NOOBS folder and drop them onto the SD card drive.
 
-### Installing Raspbian Jessie
+### 0.2 - Installing Raspbian Jessie
 1. Insert the micro SD card with NOOBS preinstalled into the micro SD card slot on your Raspberry Pi. 
 ![](assets/rpi-3.jpg)
 2. Plug in the USB 2.0 Mini Microphone, and the (optional) WiFi Wireless Adapter.
@@ -70,6 +74,7 @@ NOTE: If you bought a micro SD card with NOOBS pre-installed on it, make sure it
 ![](assets/rpi-2.jpg)
 ![](assets/rpi-4.jpg)
 
+---
 
 ##  1 - Booting up the Raspberry Pi
 
@@ -90,7 +95,7 @@ More info: [raspberrypi.org](https://www.raspberrypi.org/help/noobs-setup/)
 
 ___
 
-## 2 - Installing utilities - SSH, VNC Server, and VLC
+## 2 - Installing utilities - SSH, VNC Server, VLC, Node
 
 **NOTE**: You will be using the **Terminal** utility on the Raspberry Pi to install the utilities you need for this Alexa Voice Service walkthrough. Terminal comes preinstalled on the Raspberry Pi, and you can get to it from the Desktop. You can learn more about Terminal [here](https://www.raspberrypi.org/documentation/usage/terminal/).
 
@@ -131,7 +136,7 @@ It will prompt you for your password. *NOTE*: the default password for the user 
 
 Voila! You’re now remotely connected to your Raspberry Pi. Now you’ll install all the utilities while connected remotely via SSH. 
 
-### 2.3 Install VNC Server
+### 2.3 - Install VNC Server
 
 VNC is a graphical desktop sharing system that will allow you to remotely control the desktop interface of your Raspberry Pi from another computer. This will come in very handy as you get rid of the external monitor connected to your Raspberry Pi.
 
@@ -229,10 +234,36 @@ Type the following into the terminal:
 	echo $VLC_PLUGIN_PATH
 	> /usr/lib/vlc/plugins
 
+---
 
-### TO BE REMOVED - 2.5 Download and install Node.js
+## 3 - Download the sample app
 
-[TODO - skipping node install altogether - checked the node version - comes pre-installed with v0.10.29 on Jessie. Skipping straight to 2.6 Install JDK)
+### 3.1 - Register for a free Amazon Developer Account
+[Get a free Amazon developer account](https://developer.amazon.com/login.html) if you do not already have one.
+
+![](assets/login-amazon-dev-portal.png)
+
+### 3.2 - Download the sample app code and dependencies on the Raspberry Pi
+
+[Download](https://github.com/amzn/alexa-avs-raspberry-pi/archive/master.zip) the sample apps zip file from the [Github repo](https://github.com/amzn/alexa-avs-raspberry-pi.git). Please note that by downloading this package, you are agreeing to the [Alexa Voice Service Agreement](https://developer.amazon.com/edw/avs_agreement.html).
+
+### 3.3 - Copy and expand the .zip file on your Raspberry Pi
+
+1. Unless you downloaded the zip file on your Raspberry Pi directly, copy and then expand the zip file on your Raspberry Pi to `/home/pi/Desktop/alexa-avs-raspberry-pi-master/`. 
+
+[TODO Replace this with screenshot of the RPi file directory]
+
+![](assets/sample-code-file-list.png)
+
+
+---
+
+
+
+## 4 - Installing dependencies - Node, JDK, Maven
+
+
+### 4.1 - Download and install Node.js
 
 Verify Node isn't already installed. It should print 'command not found'.
 
@@ -252,29 +283,19 @@ Install Node itself:
 
 	sudo apt-get install nodejs	
 
-## 3 - Download the sample app
 
-### 3.1 Register for a free Amazon Developer Account
-[Get a free Amazon developer account](https://developer.amazon.com/login.html) if you do not already have one.
+## 4.2 - Install NPM
 
-![](assets/login-amazon-dev-portal.png)
+Change directories to /home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/companionService
 
-### 3.2 Download the sample app code and dependencies on the Raspberry Pi
+	cd /home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/companionService
 
-[Download](https://github.com/amzn/alexa-avs-raspberry-pi/archive/master.zip) the sample apps zip file from the [Github repo](https://github.com/amzn/alexa-avs-raspberry-pi.git). Please note that by downloading this package, you are agreeing to the [Alexa Voice Service Agreement](https://developer.amazon.com/edw/avs_agreement.html).
+Install the dependencies by typing:
 
-### 3.2 Copy and expand the .zip file on your Raspberry Pi
-
-1. Unless you downloaded the zip file on your Raspberry Pi directly, copy and then expand the zip file on your Raspberry Pi to `/home/pi/Desktop/alexa-avs-raspberry-pi-master/`. 
-
-[TODO Replace this with screenshot of the RPi file directory]
-
-![](assets/sample-code-file-list.png)
+	npm install 
 
 
-## 4 Installing dependencies - JDK, Maven
-
-### 4.1 Install Java Development Kit
+### 4.3 - Install Java Development Kit
 
 You need to have Java Development Kit (JDK) version 8 or higher installed on the Raspberry Pi. To make things easier, we've included a script that will install the latest version of JDK on your Pi and remove older JDK versions. 
 
@@ -319,7 +340,7 @@ In a text editor, open `pom.xml` and locate `<alpn-boot.version>xxx</alpn-boot.v
 
 [TODO I had to change the alpn version to 8.1.7.v20160121. My java version is 1.8.0_91, even though I ran the install-java script]
 
-### 4.2 Install Maven
+### 4.4 - Install Maven
 
 **Step 1: Download Maven** 
 
@@ -372,17 +393,11 @@ Change directories to /home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/jav
 
 	cd /home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient
 
-**Step 2**: Make the certificate generation script executable by typing:
-
-	chmod +x generate.sh
-
-[TODO - Remove this step. Not needed anymore. I was able to run the script without chmod.]
-
-**Step 3**: Run the certificate generation script:
+**Step 2**: Run the certificate generation script:
 	
 	./generate.sh
 	
-**Step 4**: You will be prompted for some information:
+**Step 3**: You will be prompted for some information:
 
 **NOTE**: These must be entered exactly as below. See Assumptions above for more info on this. 
 
@@ -394,28 +409,9 @@ A private key would be generated for you.
 
 ---
 
-## 6 - Install NPM
+## 6 - Getting started with Alexa Voice Service
 
-Change directories to /home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/companionService
-
-	cd /home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/companionService
-
-	sudo apt-get install npm
-
-Install the dependencies by typing:
-
-	npm install [TODO this may not be needed. Not running this for now]
-
-Verify npm is correctly installed - 
-
-	npm -v
-	> 1.4.21
-
----
-
-## 7 Getting started with Alexa Voice Service
-
-### 7.1 Register your product and create a security profile.
+### 6.1 - Register your product and create a security profile.
 
 1. Login to Amazon Developer Portal - [developer.amazon.com](https://developer.amazon.com/login.html)
 2. Click on Apps & Services tab -> Alexa -> Alexa Voice Service -> Get Started
@@ -484,7 +480,7 @@ You are now ready to generate self-signed certificates.
 ---
 
 
-## 8 - Enable Security Profile
+### 6.2 - Enable Security Profile
 
 1. Open a web browser, and visit [https://developer.amazon.com/lwa/sp/overview.html](https://developer.amazon.com/lwa/sp/overview.html).
 ![](assets/avs-lwa-new-security-profile.png)
@@ -500,6 +496,8 @@ You are now ready to generate self-signed certificates.
 6. Next to the Alexa Voice Service Sample App Security Profile, click Show Client ID and Client Secret. This will display your client ID and client secret. Save these values. You’ll need these. 
 ![](assets/avs-show-creds.png)
 ![](assets/avs-view-security-profile-creds.png)
+
+---
 
 ## 7 - Updating the config files
 
@@ -531,7 +529,7 @@ ___
 
 ## 8 - Run the server
 
-[TODO - mention that this must be done via VNC.]
+[NOTE: This must be done via VNC, not SSH. So, make sure you’re logged into your Pi via VNC.]
 
 **Login to the Raspberry Pi via VNC**
 
@@ -548,7 +546,7 @@ The server is now running on port 3000 and you are ready to start the client.
 ___
 
 ## 9 - Start the client
-[TODO - mention that this must be done via VNC.]
+[NOTE: This must be done via VNC, not SSH. So, make sure you’re logged into your Pi via VNC.]
 
 Open a new terminal window/tab (SHIFT+CTRL+T in Raspbian) and navigate to:
 
@@ -614,7 +612,7 @@ Press the **Stop Listening** button when you are done speaking.
 
 ___
 
-## Let’s talk to Alexa  
+## 11 - Let’s talk to Alexa  
 
 **Ask for Weather**: 
 *Click the Start Listening button*.
@@ -640,7 +638,7 @@ To demonstrate the "play/pause" button, you can speak the following command: Pla
 
 ___
 
-## 11 - FAQs
+## 12 - FAQs
 
 ### I got the Raspberry Pi working with AVS, but I can’t hear the audio response from Alexa
 
@@ -704,7 +702,7 @@ This could be because of one of 3 things -
 
 ___
 
-## 12 - Release Notes
+## 13 - Release Notes
 
 ### (2016/05/17)
 
