@@ -712,6 +712,6 @@ ___
 * Included instructions for matching ALPN and JDK versions.
 
 
-~~TODO - change the path in config.js and config.json files to include -master, so like /home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient/certs/server/node.key etc. ~~  
+~~TODO - change the path in config.js and config.json files to include -master, so like /home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient/certs/server/node.key etc.~~  
 
 [TODO - make sure all screenshots now reflect the -master path.]
