@@ -341,7 +341,7 @@ Using the File Manager on the Pi, navigate to the following directory
 	
 In a text editor, open `pom.xml` and locate `<alpn-boot.version>xxx</alpn-boot.version>`. Confirm the ALPN version matches your JDK version using the table located at [eclipse.org/jetty](http://www.eclipse.org/jetty/documentation/current/alpn-chapter.html#alpn-versions). If the versions match no further action is required. If the versions **do not** match, update the `pom.xml` file with the correct ALPN version and save.
 
-[TODO I had to change the alpn version to 8.1.7.v20160121. My java version is 1.8.0_91, even though I ran the install-java script]
+~~[TODO I had to change the alpn version to 8.1.7.v20160121. My java version is 1.8.0_91, even though I ran the install-java script]~~ [Corrected]
 
 ### 4.4 - Install Maven
 
@@ -522,7 +522,6 @@ Navigate to the following file and open it in a text editor.
 
 	/home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/companionService/config.js 	
 
-![](assets/rpi-open-text-editor.png)
 
 ![](assets/avs-config.js.png)
 
@@ -714,6 +713,6 @@ ___
 * Included instructions for matching ALPN and JDK versions.
 
 
-TODO - change the path in config.js and config.json files to include -master, so like /home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient/certs/server/node.key etc. 
+~~TODO - change the path in config.js and config.json files to include -master, so like /home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient/certs/server/node.key etc. ~~
 
 [TODO - make sure all screenshots now reflect the -master path.]

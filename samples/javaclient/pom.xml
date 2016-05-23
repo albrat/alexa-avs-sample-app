@@ -14,7 +14,7 @@
     <!-- The latest version of alpn-boot that supports JDK 1.8.0_71 through 1.8.0_74 -->
     <!-- To override, pass -Dalpn-boot.version=YOUR_VERSION when running "mvn install" and "mvn exec:exec" -->
     <!-- Your version can be determined here: http://www.eclipse.org/jetty/documentation/current/alpn-chapter.html#alpn-versions -->
-    <alpn-boot.version>8.1.8.v20160420</alpn-boot.version>
+    <alpn-boot.version>8.1.7.v20160121</alpn-boot.version>
     <slf4j.version>1.7.10</slf4j.version>
     <log4j.version>2.3</log4j.version>
   </properties>
