@@ -522,7 +522,6 @@ Navigate to the following file and open it in a text editor.
 
 	/home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/companionService/config.js 	
 
-
 ![](assets/avs-config.js.png)
 
 **Save** the file.
