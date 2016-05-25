@@ -268,15 +268,9 @@ Type the following into the terminal:
 
 ### 4.1 - Download and install Node.js
 
-Verify Node isn't already installed. It should print 'command not found'.
+Type: 
 
-	node -v
-	> command not found
-
-Now type: 
-
-	sudo apt-get update 
-	sudo apt-get upgrade
+	sudo apt-get update&&sudo apt-get upgrade
 
 Set up the apt-get repo source:
 
