@@ -10,8 +10,8 @@
     },
     "companionService":{
         "serviceUrl":"https://localhost:3000",
-        "sslClientKeyStore":"/home/pi/Desktop/alexa-avs-raspberry-pi/samples-master/javaclient/certs/client/client.pkcs12",
+        "sslClientKeyStore":"/home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient/certs/client/client.pkcs12",
         "sslClientKeyStorePassphrase":"",
-        "sslCaCert":"/home/pi/Desktop/alexa-avs-raspberry-pi/samples-master/javaclient/certs/ca/ca.crt"
+        "sslCaCert":"/home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient/certs/ca/ca.crt"
     }
 }

@@ -1,5 +1,7 @@
 # Project: Raspberry Pi + Alexa Voice Service
 
+**Update:** This project was updated 5/23/2016. Instructions have been adjusted per developer feedback, and where applicable values have been hardcoded to speed up setup. *-AVS Team*
+
 ## About the Project
 This project demonstrates how to access and test the Alexa Voice Service using a Java client (running on a Raspberry Pi), and a Node.js server. You will be using the Node.js server to get a Login with Amazon authorization code by visiting a website using your computer's (Raspberry Pi in this case) web browser. 
 
@@ -13,7 +15,7 @@ ___
 
 ### Hardware you need
 
-1. **Raspberry Pi 3 or Pi 2 (Model B)**  - Buy at Amazon - [Pi 3](https://amzn.com/B01CD5VC92) or [Pi 2](http://amzn.com/B00T2U7R7I).
+1. **Raspberry Pi 3 or Pi 2 (Model B)**  - Buy at Amazon - [Pi 3](https://amzn.com/B01CD5VC92) or [Pi 2](http://amzn.com/B00T2U7R7I).  
 	**UPDATE**: Even though this guide was built using a Raspberry Pi 3, it should work just fine with a Raspberry Pi 2 as well. Pi 1 users - please see this thread for [help](https://github.com/amzn/alexa-avs-raspberry-pi/issues/2).
 2. **Micro-USB power cable** for Raspberry Pi (included with Raspberry Pi)
 3. **Micro SD Card** - To get started with Raspberry Pi you need an operating system. NOOBS (New Out Of the Box Software) is an easy-to-use operating system install manager for the Raspberry Pi. The simplest way to get NOOBS is to buy an SD card with NOOBS preinstalled - [Raspberry Pi 8GB Preloaded (NOOBS) Micro SD Card](https://www.amazon.com/gp/product/B00ENPQ1GK/ref=oh_aui_detailpage_o01_s00?ie=UTF8&psc=1). Alternatively, you can download it and install it on the SD card (follow instructions below).
@@ -29,7 +31,7 @@ ___
 2. Familiarity with shell
 
 ### Assumptions
-This guide is based on [Convention over configuration](https://en.wikipedia.org/wiki/Convention_over_configuration) paradigm, which means that we’ve tried to reduce the number of decisions that you as a developer would need to make to get a basic version of Raspberry Pi working with Alexa, by hard coding most of the configurations. Here are some assumptions we’ve made while doing that - 
+This guide is based on [convention over configuration](https://en.wikipedia.org/wiki/Convention_over_configuration) paradigm, which means that we’ve tried to reduce the number of decisions that you as a developer need to make to get a basic version of Raspberry Pi working with the Alexa Voice Service (AVS), by hard coding configurations where applicable. Here are some assumptions we’ve made: 
 
 
 - Hardware - You are using a Raspberry Pi 2 or 3
@@ -54,13 +56,13 @@ The first thing we’ll need to do is install *Raspbian Jessie* on our Pi. The e
 
 **What is NOOBS**? NOOBS is an easy operating system installer which contains Raspbian. It also provides a selection of alternative operating systems which are then downloaded from the internet and installed.
 
-NOTE: If you already have Raspbian Jessie installed on your Pi, you may skip to *Step 2 - Installing utilities - SSH, VNC Server, VLC, Node* below.
+**NOTE:** If you already have Raspbian Jessie installed on your Pi, you may skip to [*Step 2 - Installing utilities - SSH, VNC Server, VLC, Node*](#2---installing-utilities---ssh-vnc-server-vlc-node) below.
 
 ### 0.1 - Downloading NOOBS
 
 **NOTE**: If you have a micro SD card that came with NOOBS pre-installed, make sure it has *Raspbian Jessie* available as one of the install options. If not, follow the steps below to download the latest version of NOOBS.
 
-- Download the NOOBS zip file at raspberrypi.org/downloads/noobs(https://www.raspberrypi.org/downloads/noobs/) 
+- Download the NOOBS zip file at [raspberrypi.org/downloads/noobs](https://www.raspberrypi.org/downloads/noobs/) 
 - Format the SD card using SD Formatter
 - Drag and drop NOOBS files - Once your SD card has been formatted, drag all the files in the extracted NOOBS folder and drop them onto the SD card drive.
 
@@ -84,12 +86,13 @@ NOTE: If you already have Raspbian Jessie installed on your Pi, you may skip to 
 
 	![](assets/noobs_setup.png)
 
-4. Raspbian will then run through its installation process. *Note: this can take a while - get coffee.*.
-5. When the installation process has completed, the Raspberry Pi configuration menu (raspi-config) will load. Here you can set the time and date for your region and enable a Raspberry Pi camera board, or even create users. You can exit this menu by using Tab on your keyboard to move to **Finish**.
+4. Raspbian will then run through its installation process.   
+**Note:** this can take a while - get coffee.
+5. When the installation process is complete, the Raspberry Pi configuration menu (raspi-config) will load. Here you can set the time and date for your region and enable a Raspberry Pi camera board, or even create users. You can exit this menu by using Tab on your keyboard to move to **Finish**.
 	![](assets/raspi-config.jpg)
 6. Once rebooted, login to your Raspberry Pi. The default login for Raspbian is username **pi** with the password **raspberry**
 
-**NOTE**: To load the graphical user interface at any time type **startx** into the command line. 
+**NOTE:** To load the graphical user interface at any time type **startx** into the command line. 
 
 More info: [raspberrypi.org](https://www.raspberrypi.org/help/noobs-setup/)
 
@@ -265,15 +268,9 @@ Type the following into the terminal:
 
 ### 4.1 - Download and install Node.js
 
-Verify Node isn't already installed. It should print 'command not found'.
+Type: 
 
-	node -v
-	> command not found
-
-Now type: 
-
-	sudo apt-get update 
-	sudo apt-get upgrade
+	sudo apt-get update&&sudo apt-get upgrade
 
 Set up the apt-get repo source:
 
@@ -338,7 +335,7 @@ Using the File Manager on the Pi, navigate to the following directory
 	
 In a text editor, open `pom.xml` and locate `<alpn-boot.version>xxx</alpn-boot.version>`. Confirm the ALPN version matches your JDK version using the table located at [eclipse.org/jetty](http://www.eclipse.org/jetty/documentation/current/alpn-chapter.html#alpn-versions). If the versions match no further action is required. If the versions **do not** match, update the `pom.xml` file with the correct ALPN version and save.
 
-[TODO I had to change the alpn version to 8.1.7.v20160121. My java version is 1.8.0_91, even though I ran the install-java script]
+~~[TODO I had to change the alpn version to 8.1.7.v20160121. My java version is 1.8.0_91, even though I ran the install-java script]~~ [Corrected]
 
 ### 4.4 - Install Maven
 
@@ -518,8 +515,6 @@ While pasting the values, be careful to enclose them in single quotes.
 Navigate to the following file and open it in a text editor.
 
 	/home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/companionService/config.js 	
-
-![](assets/rpi-open-text-editor.png)
 
 ![](assets/avs-config.js.png)
 
@@ -711,6 +706,6 @@ ___
 * Included instructions for matching ALPN and JDK versions.
 
 
-TODO - change the path in config.js and config.json files to include -master, so like /home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient/certs/server/node.key etc. 
+~~TODO - change the path in config.js and config.json files to include -master, so like /home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient/certs/server/node.key etc.~~  
 
 [TODO - make sure all screenshots now reflect the -master path.]
