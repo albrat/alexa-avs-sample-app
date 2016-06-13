@@ -515,8 +515,7 @@ In your terminal window or from the command prompt, type:
 	cd /home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/companionService
 	npm start
 
-![](assets/start-server.png)
-![](assets/server-running.png)
+![](assets/npm-start-server.png)
 
 The server is now running on port 3000 and you are ready to start the client.
 
@@ -529,7 +528,7 @@ Open a new terminal window/tab (SHIFT+CTRL+T in Raspbian) and navigate to:
 
 	cd /home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient 
 
-![](assets/start-client.png)
+![](assets/javaclient-dir.png)
 
 **Build the app**
 
@@ -539,7 +538,7 @@ Download dependencies and build the app by typing:
 
 When the installation is completed, you will see a “Build Success” message in the terminal. 
 
-![](assets/mvn-install-success.png)
+![](assets/mvn-install.png)
 
 **Run the client app**:
 
@@ -686,8 +685,3 @@ ___
 * Reduced total number of steps to complete project.
 * Hardcoded certificate paths.
 * Included instructions for matching ALPN and JDK versions.
-
-
-~~TODO - change the path in config.js and config.json files to include -master, so like /home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient/certs/server/node.key etc.~~  
-
-[TODO - make sure all screenshots now reflect the -master path.]
