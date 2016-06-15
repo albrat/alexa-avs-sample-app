@@ -118,8 +118,8 @@ Type the following in the Terminal:
 
 Then navigate to SSH, press **Enter** and select Enable SSH server. Use Tab twice to select Finish, then press **Enter** to exit.
 
-![](assets/ssh_raspi-config-new-1.png)
-![](assets/ssh_raspi-config-new-2.png)
+![](assets/ssh-raspi-config-new-1.png)
+![](assets/ssh-raspi-config-new-2.png)
 
 ### 2.2 - SSH into the Raspberry Pi
 
