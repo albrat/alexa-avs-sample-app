@@ -85,7 +85,7 @@ NOOBS is an easy operating system installer which contains Raspbian. It also pro
 2. Your Pi will boot, and a window will appear with a list of different operating systems that you can install.
 3. Tick the box next to **Raspbian** and click on **Install**. Make sure it is Debian Jessie, and not Debian Wheezy.
 
-	![](assets/noobs_setup.png)
+	![](assets/noobs-setup-jessie.png)
 
 4. Raspbian will run through its installation process.   
 **Note:** This may take a while - get a cup of coffee (maybe brew a pot).
