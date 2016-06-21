@@ -476,7 +476,7 @@ Edit the following values in this file -
 
 - **clientId**: Paste in the client ID that you noted in the previous step as a string.
 - **clientSecret**: Paste in the client secret that you noted in the previous step as a string.
-- **products**: The product's object consists of a key that should be the same as the product type ID that you set up in the developer portal and a value that is an array of unique product identifiers. If you followed the instructions above, the product type ID should be my_device. The unique product identifier can be any alphanumeric string, such as 123456. Example products JSON is: `products: {"my_device": ["123456"]}`
+- **products**: The product's object consists of a key that should be the same as the product type ID that you set up in the developer portal and a value that is an array of unique product identifiers. If you followed the instructions above, the product type ID should be my_device. The unique product identifier can be any alphanumeric string, such as 123456. Example products JSON is: `products: {"my_device": ["123456"]}` which has already been filled in.  If you used a different product name and ID, enter them in place of `my_device` and `123456`.
 
 ![](assets/avs-config.js.png)
 
@@ -491,32 +491,14 @@ Navigate to the following file, and open it in  a text editor.
 
 Edit the following values in this file:
 
-- **productId**: Enter **my_device** as a string.
-- **dsn**: Enter the alphanumeric string that you used for the unique product identifier in the products object in the server's config.js. For example: **123456**.
-- **provisioningMethod**: Enter **companionService**.
+- **productId**: If you used a different product name, enter it in place of `my_device`.
+- **dsn**: Enter the alphanumeric string that you used for the unique product identifier in the products object in the server's config.js if it is different from **123456**.
+- **provisioningMethod**: **companionService** has already been entered for you.
 
 ![](assets/avs-config-json.png)
 
 **Save** the file.
 
-**Step 3: Preparing the pom.xml file**
-
-Navigate to the following file and open it in a text editor.
-
--
-
-	<REFERENCE_IMPLEMENTATION>/samples/javaclient/pom.xml	
-
-Add the following to the pom.xml in the **< dependencies >** section:
-
-	<dependency>
-	  <groupId>net.java.dev.jna</groupId>
-	  <artifactId>jna</artifactId>
-	  <version>4.1.0</version>
-	  <scope>compile</scope>
-	</dependency>
-
-![](assets/avs-pom-xml.png)
 ___
 
 ## 8 - Run the server

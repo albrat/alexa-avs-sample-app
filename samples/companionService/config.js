@@ -20,11 +20,11 @@ var config = {
     lwaRedirectHost: 'amazon.com',
     lwaApiHost: 'api.amazon.com',
     validateCertChain: true,
-    sslKey: '',
-    sslCert: '',
-    sslCaCert: '',
+    sslKey: '/samples/javaclient/certs/server/node.key',
+    sslCert: '/samples/javaclient/certs/server/node.crt',
+    sslCaCert: '/samples/javaclient/certs/ca/ca.crt',
     products: {
-        "": [""], // Fill in with valid device values, eg: "testdevice1": ["DSN1234", "DSN5678"]
+        "my_device": ["123456"], // Fill in with valid device values, eg: "testdevice1": ["DSN1234", "DSN5678"]
     },
 };
 
