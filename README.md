@@ -136,7 +136,7 @@ Now that you know the IP address of your Pi, you are ready to connect to it remo
 
 	ssh pi@<YOUR Raspberry Pi IP ADDRESS>
 
-It will prompt you for your password. *NOTE*: the default password for the user pi is **raspberry**
+It will prompt you for your password. **NOTE**: the default password for the user pi is **raspberry**
 
 Voila! You’re remotely connected to your Raspberry Pi. Now you can install all the utilities while connected remotely via SSH.
 
