@@ -261,7 +261,7 @@ Type the following into the terminal:
 
 Type:
 
-	sudo apt-get update&&sudo apt-get upgrade
+	sudo apt-get update && sudo apt-get upgrade
 
 Set up the apt-get repo source:
 
