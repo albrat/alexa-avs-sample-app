@@ -107,23 +107,13 @@ ___
 
 ![](assets/raspberry-pi-terminal.png)
 
-### 2.1 - Enable SSH on Raspberry Pi
+
+### 2.1 - SSH into the Raspberry Pi
 SSH allows you to remotely access the command line of your Raspberry Pi from another computer (as long as they are both on the same network). This removes the requirement to have an external monitor connected to your Pi.
 
-SSH is **enabled by default** on Raspberry Pi. If you run into problems getting SSH to work, make sure it’s enabled. This is done using the [raspi-config](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md) utility.
+**NOTE** SSH is **enabled by default** on Raspbian Jessie. If you run into problems getting SSH to work, make sure it’s enabled. This is done using the [raspi-config](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md) utility.
 
-Type the following in the Terminal:
-
- 	sudo raspi-config
-
-Then navigate to SSH, press **Enter** and select Enable SSH server. Use Tab twice to select Finish, then press **Enter** to exit.
-
-![](assets/ssh-raspi-config-new-1.png)
-![](assets/ssh-raspi-config-new-2.png)
-
-### 2.2 - SSH into the Raspberry Pi
-
-Now let's SSH into your Raspberry Pi. To do that, you need to know the IP address of your Raspberry Pi.
+So, let's SSH into your Raspberry Pi. To do that, you need to know the IP address of your Raspberry Pi.
 
 Type this command into the terminal:
 
@@ -140,7 +130,7 @@ It will prompt you for your password. **NOTE**: the default password for the use
 
 Voila! You’re remotely connected to your Raspberry Pi. Now you can install all the utilities while connected remotely via SSH.
 
-### 2.3 - Install VNC Server
+### 2.2 - Install VNC Server
 
 VNC is a graphical desktop sharing system that will allow you to remotely control the desktop interface of your Raspberry Pi from another computer. This will come in very handy as you get rid of the external monitor connected to your Pi. Type:
 
@@ -190,7 +180,7 @@ That's it. The next time you **reboot**, the VNC server will restart automatical
 
 **You may now disconnect the Monitor, keyboard and mouse (if you like)**. Now with SSH (allows remote access to the terminal) and VNC (allows you to remote control the Raspberry Pi’s desktop interface) installed, the external monitor is optional. Feel free to disconnect it from the Raspberry Pi.
 
-### 2.4 - Install VLC
+### 2.3 - Install VLC
 
 Get VLC media player by typing:
 
