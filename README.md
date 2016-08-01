@@ -324,7 +324,7 @@ In a text editor, open `pom.xml` and locate `<alpn-boot.version>xxx</alpn-boot.v
 
 **Step 1: Download Maven**
 
-Download the Binary tar.gz file [apache-maven-3.3.9-bin.tar.gz](http://www.interior-dsgn.com/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz) from [maven.apache.org](https://maven.apache.org/download.cgi)
+Download the Binary tar.gz file [apache-maven-3.3.9-bin.tar.gz](http://apache.osuosl.org/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz) from [maven.apache.org](https://maven.apache.org/download.cgi)
 
 **Step 2: Extract the contents**
 
