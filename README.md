@@ -64,7 +64,7 @@ NOOBS is an easy operating system installer which contains Raspbian. It also pro
 **NOTE**: If you have a micro SD card that came with NOOBS pre-installed, make sure it has *Raspbian Jessie* available as one of the install options. If not, follow the steps below to download the latest version of NOOBS.
 
 1. Download the latest NOOBS zip file - [downloads.raspberrypi.org/NOOBS_latest](https://downloads.raspberrypi.org/NOOBS_latest)
-2. Format the SD card using [SD Formatter](https://www.raspberrypi.org/help/noobs-setup/)
+2. Format the SD card using [SD Formatter](https://www.raspberrypi.org/documentation/installation/noobs.md)
 3. Drag and drop NOOBS files on to the SD Card: Once your SD card has been formatted, drag all the files from the extracted NOOBS folder and drop them onto the SD card drive.
 
 ### 0.2 - Installing Raspbian Jessie
