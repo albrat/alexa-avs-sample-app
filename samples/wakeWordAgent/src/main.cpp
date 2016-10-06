@@ -118,6 +118,7 @@ int main(int argc, char* argv[]) {
   while (true) {
 
     // Ok - let agent threads run until we're terminated
+    sleep(1);
 
   }
 }

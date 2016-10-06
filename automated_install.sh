@@ -261,15 +261,12 @@ echo "Do you agree to the terms and conditions of the necessary software from th
 echo ""
 echo ""
 echo "======================================================="
-echo "" 
-echo ""
-echo "Do you want to download and use the necessary software from the third party sources?"
 echo ""
 echo ""
 parse_user_input 1 0 1
 
 clear
-echo "====== AVS + Raspberry Pi Installer ======"
+echo "=============== AVS + Raspberry Pi Installer =========="
 echo ""
 echo ""
 echo "Welcome to the AVS + Raspberry Pi installer."
@@ -278,7 +275,7 @@ echo "at https://developer.amazon.com/edw/home.html and follow the"
 echo "instructions on github.com to create an AVS device or application."
 echo ""
 echo ""
-echo "=========================================="
+echo "======================================================="
 echo ""
 echo ""
 echo "Do you have an Amazon developer account?"
@@ -288,13 +285,16 @@ parse_user_input 1 1 1
 USER_RESPONSE=$?
 if [ "$USER_RESPONSE" = "$NO_ANSWER" ]; then
   clear
-  echo "====Register for an Amazon Developer Account====="
+  echo "====== Register for an Amazon Developer Account ======="
   echo ""
   echo ""
   echo "Please register for an Amazon developer account\nat https://developer.amazon.com/edw/home.html before continuing."
   echo ""
   echo ""
   echo "Ready to continue?"
+  echo ""
+  echo ""
+  echo "======================================================="
   echo ""
   echo ""
   parse_user_input 1 0 1
@@ -328,6 +328,9 @@ echo ""
 echo "Please respond (y) for 3.5mm jack, or (n) for HDMI audio output."
 echo ""
 echo ""
+echo "======================================================="
+echo ""
+echo ""
 parse_user_input 1 1 1
 USER_RESPONSE=$?
 if [ "$USER_RESPONSE" = "$NO_ANSWER" ]; then
@@ -341,10 +344,13 @@ fi
 Wake_Word_Detection_Enabled="true"
 # Check if user wants to enable Wake Word "Alexa" Detection
 clear
-echo "==== Enabling Hands Free Experience using Wake Word \"Alexa\" ====="
+echo "=== Enabling Hands Free Experience using Wake Word \"Alexa\" ===="
 echo ""
 echo ""
 echo "Do you want to enable \"Alexa\" Wake Word Detection?"
+echo ""
+echo ""
+echo "======================================================="
 echo ""
 echo ""
 parse_user_input 1 1 1

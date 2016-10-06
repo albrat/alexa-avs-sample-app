@@ -56,7 +56,7 @@ std::string getSensoryDetails(SnsrSession session, SnsrRC result) {
   } else {
     message = snsrRCMessage(result);
   }
-  if("" != message) {
+  if("" == message) {
     message = "Unrecognized error";
   }
   return message;
@@ -136,7 +136,7 @@ void SensoryWakeWordEngine::init() {
   const char* info = nullptr;
   result = snsrGetString(m_session, SNSR_LICENSE_EXPIRES, &info);
   if(result == SNSR_RC_OK && info) {
-    log(Logger::DEBUG, "Library expires on: " + std::string(info));
+    log(Logger::WARNING, "Library expires on: " + std::string(info));
   } else {
     log(Logger::DEBUG, "Library does not expire");
   }
@@ -144,7 +144,7 @@ void SensoryWakeWordEngine::init() {
   // Check if the expiration date is near, then we should display a warning
   result = snsrGetString(m_session, SNSR_LICENSE_WARNING, &info);
   if(result == SNSR_RC_OK && info) {
-    log(Logger::DEBUG, "Library expires in: " + std::string(info));
+    log(Logger::WARNING, "Library expires in: " + std::string(info));
   } else {
     log(Logger::DEBUG, "Library expiration is valid for at least 60 days.");
   }

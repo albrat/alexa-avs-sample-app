@@ -16,15 +16,19 @@
 #include "WakeWordUtils.h"
 #include "WakeWordException.h"
 
+#include <unistd.h>
+
 using namespace snowboy;
 using namespace AlexaWakeWord::Logger;
 
 namespace AlexaWakeWord {
 
-static const std::string  RESOURCE_FILE = "../ext/resources/common.res";
-static const std::string  MODEL_FILE    = "../ext/resources/alexa.umdl";
-static const std::string  SENSITIVITY   = "0.4";
-static const float        AUDIO_GAIN    = 1.0;
+static const std::string  RESOURCE_FILE  = "../ext/resources/common.res";
+static const std::string  MODEL_FILE     = "../ext/resources/alexa.umdl";
+static const std::string  SENSITIVITY    = "0.5";
+static const float        AUDIO_GAIN     = 1.0;
+static const bool         APPLY_FRONTEND = true;
+static const int          MICROSECONDS_BETWEEN_SAMPLES = 100000;
 
 KittAiSnowboyWakeWordEngine::KittAiSnowboyWakeWordEngine(
         WakeWordDetectedInterface* interface) : WakeWordEngine(interface),
@@ -104,6 +108,7 @@ void KittAiSnowboyWakeWordEngine::initDetector() {
   m_detector = make_unique<SnowboyDetect>(RESOURCE_FILE, MODEL_FILE);
   m_detector->SetSensitivity(SENSITIVITY);
   m_detector->SetAudioGain(AUDIO_GAIN);
+  m_detector->ApplyFrontend(APPLY_FRONTEND);
   m_isDetectorSetup = true;
 }
 
@@ -153,6 +158,7 @@ void KittAiSnowboyWakeWordEngine::mainLoop() {
       log(Logger::INFO, "KittAiSnowboyWakeWordEngine: Wake Word Detected");
       wakeWordDetected();
     }
+    usleep(MICROSECONDS_BETWEEN_SAMPLES);
   }
 
   log(Logger::INFO, "KittAiSnowboyWakeWordEngine: thread ended");
