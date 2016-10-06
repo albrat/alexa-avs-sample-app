@@ -12,8 +12,8 @@ IP.2                    = 10.0.2.2
 
 [req_distinguished_name]
 commonName              = $ENV::COMMON_NAME                 # CN=
-countryName             = US                 # C=
-stateOrProvinceName     = WA            # ST=
-localityName            = SEATTLE                         # L=
-organizationName        = RASP_PI                 # O=
-organizationalUnitName  = RASP_PI_TEST          # OU=
+countryName             = YOUR_COUNTRY_NAME                 # C=
+stateOrProvinceName     = YOUR_STATE_OR_PROVINCE            # ST=
+localityName            = YOUR_CITY                         # L=
+organizationName        = YOUR_ORGANIZATION                 # O=
+organizationalUnitName  = YOUR_ORGANIZATIONAL_UNIT          # OU=

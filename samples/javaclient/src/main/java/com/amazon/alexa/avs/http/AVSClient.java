@@ -1,10 +1,14 @@
-/**
- * Copyright 2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+/** 
+ * Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
- * You may not use this file except in compliance with the License. A copy of the License is located the "LICENSE.txt"
- * file accompanying this source. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the specific language governing permissions and limitations
- * under the License.
+ * Licensed under the Amazon Software License (the "License"). You may not use this file 
+ * except in compliance with the License. A copy of the License is located at
+ *
+ *   http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the 
+ * specific language governing permissions and limitations under the License.
  */
 package com.amazon.alexa.avs.http;
 
@@ -247,7 +251,7 @@ public class AVSClient implements ConnectionListener {
 
         InputStreamResponseListener responseListener = new InputStreamResponseListener();
         Response response;
-        InputStream inputStream;
+        InputStream inputStream = null;
 
         try {
             // We have a request queue that maintains correct sequencing of events to appease the
@@ -261,6 +265,7 @@ public class AVSClient implements ConnectionListener {
             }
             inputStream = responseListener.getInputStream();
         } catch (Exception e) {
+            IOUtils.closeQuietly(inputStream);
             throw new RequestException(e);
         }
 
@@ -296,6 +301,8 @@ public class AVSClient implements ConnectionListener {
         } catch (JsonProcessingException e) {
             String unparseable = IOUtils.toString(inputStream);
             parsingFailedHandler.onParsingFailed(unparseable);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
         }
     }
 

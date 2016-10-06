@@ -21,7 +21,8 @@ else
 fi
 
 # Remove any existing Java
-sudo apt-get remove --purge oracle-java8-jdk oracle-java7-jdk openjdk-7-jre openjdk-8-jre
+sudo apt-get -y autoremove
+sudo apt-get -y remove --purge oracle-java8-jdk oracle-java7-jdk openjdk-7-jre openjdk-8-jre
 
 # Install Java from Ubuntu's PPA
 # http://linuxg.net/how-to-install-the-oracle-java-8-on-debian-wheezy-and-debian-jessie-via-repository/
@@ -29,5 +30,5 @@ sudo sh -c "echo \"deb http://ppa.launchpad.net/webupd8team/java/ubuntu $UBUNTU_
 sudo sh -c "echo \"deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu $UBUNTU_VERSION main\" >> /etc/apt/sources.list"
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
 sudo apt-get update
-sudo apt-get install oracle-java8-installer
-sudo apt-get install oracle-java8-set-default
+sudo apt-get -y install oracle-java8-installer
+sudo apt-get -y install oracle-java8-set-default

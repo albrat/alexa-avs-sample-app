@@ -1,10 +1,14 @@
-/**
- * Copyright 2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+/** 
+ * Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
- * You may not use this file except in compliance with the License. A copy of the License is located the "LICENSE.txt"
- * file accompanying this source. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the specific language governing permissions and limitations
- * under the License.
+ * Licensed under the Amazon Software License (the "License"). You may not use this file 
+ * except in compliance with the License. A copy of the License is located at
+ *
+ *   http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the 
+ * specific language governing permissions and limitations under the License.
  */
 package com.amazon.alexa.avs.config;
 
@@ -31,6 +35,7 @@ public class DeviceConfig {
     public static final String COMPANION_SERVICE = "companionService";
     public static final String PROVISIONING_METHOD = "provisioningMethod";
     public static final String AVS_HOST = "avsHost";
+    public static final String WAKE_WORD_AGENT_ENABLED = "wakeWordAgentEnabled";
 
     /*
      * Required parameters from the config file.
@@ -45,11 +50,12 @@ public class DeviceConfig {
      */
     private CompanionAppInformation companionAppInfo;
     private CompanionServiceInformation companionServiceInfo;
+    private boolean wakeWordAgentEnabled;
 
     @SuppressWarnings("javadoc")
     public enum ProvisioningMethod {
-        COMPANION_APP(DeviceConfig.COMPANION_APP), COMPANION_SERVICE(
-                DeviceConfig.COMPANION_SERVICE);
+        COMPANION_APP(DeviceConfig.COMPANION_APP),
+        COMPANION_SERVICE(DeviceConfig.COMPANION_SERVICE);
 
         private String name;
 
@@ -82,6 +88,8 @@ public class DeviceConfig {
      * @param provisioningMethod
      *            The provisioningMethod to use. One of: {@value #COMPANION_APP},
      *            {@value #COMPANION_SERVICE}
+     * @param wakeWordAgentEnabled
+     *            Whether the wake word agent functionality is enabled.
      * @param companionAppInfo
      *            The information necessary for the Companion App method of provisioning.
      * @param companionServiceInfo
@@ -90,7 +98,7 @@ public class DeviceConfig {
      *            (optional) AVS host override
      */
     public DeviceConfig(String productId, String dsn, String provisioningMethod,
-            CompanionAppInformation companionAppInfo,
+            boolean wakeWordAgentEnabled, CompanionAppInformation companionAppInfo,
             CompanionServiceInformation companionServiceInfo, String avsHost) {
 
         if (StringUtils.isBlank(productId)) {
@@ -132,13 +140,15 @@ public class DeviceConfig {
         } catch (MalformedURLException e) {
             throw new MalformedConfigException(AVS_HOST + " is malformed in your config file.", e);
         }
+
+        this.wakeWordAgentEnabled = wakeWordAgentEnabled;
     }
 
     public DeviceConfig(String productId, String dsn, String provisioningMethod,
-            CompanionAppInformation companionAppInfo,
+            boolean wakeWordAgentEnabled, CompanionAppInformation companionAppInfo,
             CompanionServiceInformation companionServiceInfo) {
-        this(productId, dsn, provisioningMethod, companionAppInfo, companionServiceInfo,
-                DEFAULT_HOST);
+        this(productId, dsn, provisioningMethod, wakeWordAgentEnabled, companionAppInfo,
+                companionServiceInfo, DEFAULT_HOST);
     }
 
     /**
@@ -177,6 +187,13 @@ public class DeviceConfig {
     }
 
     /**
+     * @return wakeWordAgentEnabled.
+     */
+    public boolean getWakeWordAgentEnabled() {
+        return wakeWordAgentEnabled;
+    }
+
+    /**
      * @param companionAppInfo
      */
     public void setCompanionAppInfo(CompanionAppInformation companionAppInfo) {
@@ -210,12 +227,14 @@ public class DeviceConfig {
      * @return A JSON representation of this object.
      */
     public JsonObject toJson() {
-        JsonObjectBuilder builder = Json
-                .createObjectBuilder()
-                .add(PRODUCT_ID, productId)
-                .add(DSN, dsn)
-                .add(PROVISIONING_METHOD, provisioningMethod.toString())
-                .add(AVS_HOST, avsHost.toString());
+
+        JsonObjectBuilder builder =
+                Json.createObjectBuilder()
+                        .add(PRODUCT_ID, productId)
+                        .add(DSN, dsn)
+                        .add(PROVISIONING_METHOD, provisioningMethod.toString())
+                        .add(WAKE_WORD_AGENT_ENABLED, wakeWordAgentEnabled)
+                        .add(AVS_HOST, avsHost.toString());
 
         if (companionAppInfo != null) {
             builder.add(COMPANION_APP, companionAppInfo.toJson());
@@ -246,6 +265,13 @@ public class DeviceConfig {
 
         private URL loginWithAmazonUrl;
         private String clientId;
+
+        /**
+         * This is a field that represents the OAuth refresh token. Please note that this token
+         * represents persistent authorization on the client side, and should be treated with care.
+         * This implementation will store this value on disk. For a production deployment of this
+         * code, a more secure method of storing this data is strongly recommended.
+         */
         private String refreshToken;
 
         /**
@@ -277,6 +303,11 @@ public class DeviceConfig {
         }
 
         /**
+         * This is an accessor for the OAuth refresh token. Please note that this token represents
+         * persistent authorization on the client side, and should be treated with care. This
+         * implementation will store this value on disk. For a production deployment of this code,
+         * a more secure method of storing this data is strongly recommended.
+         *
          * @return refreshToken.
          */
         public String getRefreshToken() {
@@ -308,8 +339,8 @@ public class DeviceConfig {
                     try {
                         loginWithAmazonUrl = new URL(lwaUrl);
                     } catch (MalformedURLException e) {
-                        throw new MalformedConfigException(
-                                LWA_URL + " is malformed in your config file.", e);
+                        throw new MalformedConfigException(LWA_URL
+                                + " is malformed in your config file.", e);
                     }
                 }
             }
@@ -336,12 +367,12 @@ public class DeviceConfig {
          * @return A JSON representation of this object.
          */
         public JsonObject toJson() {
-            JsonObjectBuilder builder = Json
-                    .createObjectBuilder()
-                    .add(LOCAL_PORT, localPort)
-                    .add(LWA_URL, getLwaUrl().toString())
-                    .add(SSL_KEYSTORE, sslKeyStore)
-                    .add(SSL_KEYSTORE_PASSPHRASE, sslKeyStorePassphrase);
+            JsonObjectBuilder builder =
+                    Json.createObjectBuilder()
+                            .add(LOCAL_PORT, localPort)
+                            .add(LWA_URL, getLwaUrl().toString())
+                            .add(SSL_KEYSTORE, sslKeyStore)
+                            .add(SSL_KEYSTORE_PASSPHRASE, sslKeyStorePassphrase);
 
             if ((clientId != null) && (refreshToken != null)) {
                 builder.add(CLIENT_ID, clientId);
@@ -353,8 +384,8 @@ public class DeviceConfig {
 
         public boolean isValid() {
             if (localPort < 1 || localPort > 65535) {
-                throw new MalformedConfigException(
-                        LOCAL_PORT + " is invalid. Value port values are 1-65535.");
+                throw new MalformedConfigException(LOCAL_PORT
+                        + " is invalid. Value port values are 1-65535.");
             }
 
             getLwaUrl(); // Verifies that the url is valid
@@ -363,8 +394,8 @@ public class DeviceConfig {
             } else {
                 File sslKeyStoreFile = new File(sslKeyStore);
                 if (!sslKeyStoreFile.exists()) {
-                    throw new MalformedConfigException(
-                            sslKeyStore + " " + SSL_KEYSTORE + " does not exist.");
+                    throw new MalformedConfigException(sslKeyStore + " " + SSL_KEYSTORE
+                            + " does not exist.");
                 }
             }
             return true;
@@ -408,14 +439,14 @@ public class DeviceConfig {
         public URL getServiceUrl() {
             if (serviceUrl == null) {
                 if (StringUtils.isBlank(serviceUrlString)) {
-                    throw new MalformedConfigException(
-                            SERVICE_URL + " is blank in your config file.");
+                    throw new MalformedConfigException(SERVICE_URL
+                            + " is blank in your config file.");
                 } else {
                     try {
                         this.serviceUrl = new URL(serviceUrlString);
                     } catch (MalformedURLException e) {
-                        throw new MalformedConfigException(
-                                SERVICE_URL + " is malformed in your config file.", e);
+                        throw new MalformedConfigException(SERVICE_URL
+                                + " is malformed in your config file.", e);
                     }
                 }
             }
@@ -463,12 +494,12 @@ public class DeviceConfig {
          * @return A JSON representation of this object.
          */
         public JsonObject toJson() {
-            JsonObjectBuilder builder = Json
-                    .createObjectBuilder()
-                    .add(SERVICE_URL, getServiceUrl().toString())
-                    .add(SSL_CLIENT_KEYSTORE, sslClientKeyStore)
-                    .add(SSL_CLIENT_KEYSTORE_PASSPHRASE, sslClientKeyStorePassphrase)
-                    .add(SSL_CA_CERT, sslCaCert);
+            JsonObjectBuilder builder =
+                    Json.createObjectBuilder()
+                            .add(SERVICE_URL, getServiceUrl().toString())
+                            .add(SSL_CLIENT_KEYSTORE, sslClientKeyStore)
+                            .add(SSL_CLIENT_KEYSTORE_PASSPHRASE, sslClientKeyStorePassphrase)
+                            .add(SSL_CA_CERT, sslCaCert);
 
             if (sessionId != null) {
                 builder.add(SESSION_ID, sessionId);
@@ -480,13 +511,13 @@ public class DeviceConfig {
         public boolean isValid() {
             getServiceUrl(); // Verifies that the URL is valid
             if (StringUtils.isBlank(sslClientKeyStore)) {
-                throw new MalformedConfigException(
-                        SSL_CLIENT_KEYSTORE + " is blank in your config file.");
+                throw new MalformedConfigException(SSL_CLIENT_KEYSTORE
+                        + " is blank in your config file.");
             } else {
                 File sslClientKeyStoreFile = new File(sslClientKeyStore);
                 if (!sslClientKeyStoreFile.exists()) {
-                    throw new MalformedConfigException(
-                            sslClientKeyStore + " " + SSL_CLIENT_KEYSTORE + " does not exist.");
+                    throw new MalformedConfigException(sslClientKeyStore + " "
+                            + SSL_CLIENT_KEYSTORE + " does not exist.");
                 }
             }
 
@@ -495,8 +526,8 @@ public class DeviceConfig {
             } else {
                 File sslCaCertFile = new File(sslCaCert);
                 if (!sslCaCertFile.exists()) {
-                    throw new MalformedConfigException(
-                            sslCaCertFile + " " + SSL_CA_CERT + " does not exist.");
+                    throw new MalformedConfigException(sslCaCertFile + " " + SSL_CA_CERT
+                            + " does not exist.");
                 }
             }
             return true;

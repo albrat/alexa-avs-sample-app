@@ -1,10 +1,14 @@
-/**
- * Copyright 2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+/** 
+ * Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
- * You may not use this file except in compliance with the License. A copy of the License is located the "LICENSE.txt"
- * file accompanying this source. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the specific language governing permissions and limitations
- * under the License.
+ * Licensed under the Amazon Software License (the "License"). You may not use this file 
+ * except in compliance with the License. A copy of the License is located at
+ *
+ *   http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the 
+ * specific language governing permissions and limitations under the License.
  */
 package com.amazon.alexa.avs;
 
@@ -14,10 +18,14 @@ import com.amazon.alexa.avs.auth.companionservice.RegCodeDisplayHandler;
 import com.amazon.alexa.avs.config.DeviceConfig;
 import com.amazon.alexa.avs.config.DeviceConfigUtils;
 import com.amazon.alexa.avs.http.AVSClientFactory;
+import com.amazon.alexa.avs.wakeword.WakeWordDetectedHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -26,6 +34,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Properties;
 
 import javax.swing.Box;
@@ -39,15 +48,17 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
+import com.amazon.alexa.avs.wakeword.WakeWordIPCFactory;
+
 @SuppressWarnings("serial")
 public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMSListener,
-        RegCodeDisplayHandler, AccessTokenListener {
+        RegCodeDisplayHandler, AccessTokenListener, ExpectStopCaptureListener,
+        WakeWordDetectedHandler {
 
     private static final Logger log = LoggerFactory.getLogger(AVSApp.class);
 
     private static final String APP_TITLE = "Alexa Voice Service";
-    private static final String START_LABEL = "Start Listening";
-    private static final String STOP_LABEL = "Stop Listening";
+    private static final String LISTEN_LABEL = "Listen";
     private static final String PROCESSING_LABEL = "Processing";
     private static final String PREVIOUS_LABEL = "\u21E4";
     private static final String NEXT_LABEL = "\u21E5";
@@ -56,16 +67,20 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
     private final AVSController controller;
     private JButton actionButton;
     private JButton playPauseButton;
+    private Container playbackPanel;
     private JTextField tokenTextField;
     private JProgressBar visualizer;
-    private Thread autoEndpoint = null; // used to auto-endpoint while listening
     private final DeviceConfig deviceConfig;
-    // minimum audio level threshold under which is considered silence
-    private static final int ENDPOINT_THRESHOLD = 5;
-    private static final int ENDPOINT_SECONDS = 2; // amount of silence time before endpointing
+ 
     private String accessToken;
 
     private AuthSetup authSetup;
+
+    private enum ButtonState {
+        START, STOP, PROCESSING;
+    }
+
+    private ButtonState buttonState;
 
     public static void main(String[] args) throws Exception {
         if (args.length == 1) {
@@ -85,8 +100,10 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
 
     private AVSApp(DeviceConfig config) throws Exception {
         deviceConfig = config;
-        controller = new AVSController(this, new AVSAudioPlayerFactory(), new AlertManagerFactory(),
-                getAVSClientFactory(deviceConfig), DialogRequestIdAuthority.getInstance());
+        controller =
+                new AVSController(this, new AVSAudioPlayerFactory(), new AlertManagerFactory(),
+                        getAVSClientFactory(deviceConfig), DialogRequestIdAuthority.getInstance(),
+                        config.getWakeWordAgentEnabled(), new WakeWordIPCFactory(), this);
 
         authSetup = new AuthSetup(config, this);
         authSetup.addAccessTokenListener(this);
@@ -104,6 +121,7 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(400, 200);
         setVisible(true);
+        controller.initializeStopCaptureHandler(this);
         controller.startHandlingDirectives();
     }
 
@@ -175,14 +193,17 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
 
     private void addActionField() {
         final RecordingRMSListener rmsListener = this;
-        actionButton = new JButton(START_LABEL);
+        actionButton = new JButton(LISTEN_LABEL);
+        buttonState = ButtonState.START;
         actionButton.setEnabled(true);
         actionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.onUserActivity();
-                if (actionButton.getText().equals(START_LABEL)) { // if in idle mode
-                    actionButton.setText(STOP_LABEL);
+
+                if (buttonState == ButtonState.START) { // if in idle mode
+                    buttonState = ButtonState.STOP;
+                    setPlaybackControlEnabled(false);
 
                     RequestListener requestListener = new RequestListener() {
 
@@ -194,18 +215,18 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
                         @Override
                         public void onRequestError(Throwable e) {
                             log.error("An error occured creating speech request", e);
-                            JOptionPane.showMessageDialog(getContentPane(), e.getMessage(), "Error",
-                                    JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(getContentPane(), e.getMessage(),
+                                    "Error", JOptionPane.ERROR_MESSAGE);
                             actionButton.doClick();
                             finishProcessing();
                         }
                     };
-
                     controller.startRecording(rmsListener, requestListener);
                 } else { // else we must already be in listening
                     actionButton.setText(PROCESSING_LABEL); // go into processing mode
                     actionButton.setEnabled(false);
                     visualizer.setIndeterminate(true);
+                    buttonState = ButtonState.PROCESSING;
                     controller.stopRecording(); // stop the recording so the request can complete
                 }
             }
@@ -237,7 +258,7 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
         alexaCall.execute();
     }
 
-    private void createMusicButton(JPanel container, String label, final PlaybackAction action) {
+    private void createMusicButton(Container container, String label, final PlaybackAction action) {
         JButton button = new JButton(label);
         button.setEnabled(true);
         button.addActionListener(new ActionListener() {
@@ -250,18 +271,40 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
         container.add(button);
     }
 
+    private void setPlaybackControlEnabled(boolean enable) {
+        setComponentsOfContainerEnabled(playbackPanel, enable);
+    }
+
+    /**
+     * Recursively Enable/Disable components in a container
+     *
+     * @param container
+     *            Object of type Container (like JPanel).
+     * @param enable
+     *            Set true to enable all components in the container. Set to false to disable all.
+     */
+    private void setComponentsOfContainerEnabled(Container container, boolean enable) {
+        for (Component component : container.getComponents()) {
+            if (component instanceof Container) {
+                setComponentsOfContainerEnabled((Container) component, enable);
+            }
+            component.setEnabled(enable);
+        }
+    }
+
     /**
      * Add music control buttons
      */
     private void addPlaybackButtons() {
-        JPanel container = new JPanel();
-        container.setLayout(new GridLayout(1, 5));
+        playbackPanel = new JPanel();
+        playbackPanel.setLayout(new GridLayout(1, 5));
 
         playPauseButton = new JButton(PLAY_LABEL + "/" + PAUSE_LABEL);
         playPauseButton.setEnabled(true);
         playPauseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 controller.onUserActivity();
                 if (controller.isPlaying()) {
                     musicButtonPressedEventHandler(PlaybackAction.PAUSE);
@@ -271,15 +314,17 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
             }
         });
 
-        createMusicButton(container, PREVIOUS_LABEL, PlaybackAction.PREVIOUS);
-        container.add(playPauseButton);
+        createMusicButton(playbackPanel, PREVIOUS_LABEL, PlaybackAction.PREVIOUS);
+        playbackPanel.add(playPauseButton);
 
-        createMusicButton(container, NEXT_LABEL, PlaybackAction.NEXT);
-        getContentPane().add(container);
+        createMusicButton(playbackPanel, NEXT_LABEL, PlaybackAction.NEXT);
+        getContentPane().add(playbackPanel);
     }
 
     public void finishProcessing() {
-        actionButton.setText(START_LABEL);
+        actionButton.setText(LISTEN_LABEL);
+        setPlaybackControlEnabled(true);
+        buttonState = ButtonState.START;
         actionButton.setEnabled(true);
         visualizer.setIndeterminate(false);
         controller.processingFinished();
@@ -288,31 +333,6 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
 
     @Override
     public void rmsChanged(int rms) { // AudioRMSListener callback
-        // if greater than threshold or not recording, kill the autoendpoint thread
-        if ((rms == 0) || (rms > ENDPOINT_THRESHOLD)) {
-            if (autoEndpoint != null) {
-                autoEndpoint.interrupt();
-                autoEndpoint = null;
-            }
-        } else if (rms < ENDPOINT_THRESHOLD) {
-            // start the autoendpoint thread if it isn't already running
-            if (autoEndpoint == null) {
-                autoEndpoint = new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(ENDPOINT_SECONDS * 1000);
-                            actionButton.doClick(); // hit stop if we get through the autoendpoint
-                                                    // time
-                        } catch (InterruptedException e) {
-                            return;
-                        }
-                    }
-                };
-                autoEndpoint.start();
-            }
-        }
-
         visualizer.setValue(rms); // update the visualizer
     }
 
@@ -321,7 +341,7 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
         Thread thread = new Thread() {
             @Override
             public void run() {
-                while (!actionButton.isEnabled() || !actionButton.getText().equals(START_LABEL)
+                while (!actionButton.isEnabled() || buttonState != ButtonState.START
                         || controller.isSpeaking()) {
                     try {
                         Thread.sleep(500);
@@ -332,23 +352,53 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
             }
         };
         thread.start();
-
     }
 
-    public void showDialog(String message) {
+    @Override
+    public void onStopCaptureDirective() {
+        if (buttonState == ButtonState.STOP) {
+            actionButton.doClick();
+        }
+    }
+
+    public int showYesNoDialog(String message, String title) {
         JTextArea textMessage = new JTextArea(message);
         textMessage.setEditable(false);
-        JOptionPane.showMessageDialog(getContentPane(), textMessage, "Information",
+        return JOptionPane.showConfirmDialog(getContentPane(), textMessage, title,
+                JOptionPane.YES_NO_OPTION);
+    }
+
+    public void showDialog(String message, String title) {
+        JTextArea textMessage = new JTextArea(message);
+        textMessage.setEditable(false);
+        JOptionPane.showMessageDialog(getContentPane(), textMessage, title,
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
     public void displayRegCode(String regCode) {
+        String title = "Login to Register/Authenticate your Device";
         String regUrl =
                 deviceConfig.getCompanionServiceInfo().getServiceUrl() + "/provision/" + regCode;
-        showDialog("Please register your device by visiting the following website on "
-                + "any system and following the instructions:\n" + regUrl
-                + "\n\n Hit OK once completed.");
+        int selected =
+                showYesNoDialog(
+                        "Please register your device by visiting the following URL in "
+                                + "a web browser and follow the instructions:\n"
+                                + regUrl
+                                + "\n\n Would you like to open the URL automatically in your default browser?",
+                        title);
+        if (selected == JOptionPane.YES_OPTION) {
+            try {
+                Desktop.getDesktop().browse(new URI(regUrl));
+            } catch (Exception e) {
+                // Ignore and proceed
+            }
+            title = "Click OK after Registering/Authenticating Device";
+            showDialog(
+                    "If a browser window did not open, please copy and paste the below URL into a "
+                            + "web browser, and follow the instructions:\n" + regUrl
+                            + "\n\n Click the OK button when finished.", title);
+        }
     }
 
     @Override
@@ -360,4 +410,11 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
         }
     }
 
+    @Override
+    public synchronized void onWakeWordDetected() {
+        if (buttonState == ButtonState.START) { // if in idle mode
+            log.info("Wake Word was detected");
+            actionButton.doClick();
+        }
+    }
 }

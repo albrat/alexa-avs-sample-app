@@ -1,17 +1,18 @@
 {
-    "productId":"my_device",
-    "dsn":"123456",
-    "provisioningMethod":"companionService",
+    "productId":"",
+    "dsn":"",
+    "provisioningMethod":"",
+    "wakeWordAgentEnabled":false,
     "companionApp":{
         "localPort":8443,
-        "sslKeyStore":"/home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient/certs/server/jetty.pkcs12",
+        "sslKeyStore":"",
         "sslKeyStorePassphrase":"",
         "lwaUrl":"https://api.amazon.com"
     },
     "companionService":{
         "serviceUrl":"https://localhost:3000",
-        "sslClientKeyStore":"/home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient/certs/client/client.pkcs12",
+        "sslClientKeyStore":"",
         "sslClientKeyStorePassphrase":"",
-        "sslCaCert":"/home/pi/Desktop/alexa-avs-raspberry-pi-master/samples/javaclient/certs/ca/ca.crt"
+        "sslCaCert":""
     }
 }

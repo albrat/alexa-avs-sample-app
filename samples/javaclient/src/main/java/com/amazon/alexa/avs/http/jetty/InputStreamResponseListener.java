@@ -1,14 +1,14 @@
-/**
- * Portions of this file were modified by Amazon as indicated in the code.
- * The Amazon modifications are copyright 2015-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+/** 
+ * Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
- * The Amazon modifications are subject to the License as defined in the LICENSE.txt file accompanying this source.  You may not use this file as a whole except in compliance with the License. A link to the License is located in LICENSE.txt.
+ * Licensed under the Amazon Software License (the "License"). You may not use this file 
+ * except in compliance with the License. A copy of the License is located at
  *
- * This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the specific language governing permissions and limitations
- * under the License.
+ *   http://aws.amazon.com/asl/
  *
- * The below copyright and license statements apply to the portions of this file other than the Amazon modifications.
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the 
+ * specific language governing permissions and limitations under the License.
  */
 //
 //  ========================================================================

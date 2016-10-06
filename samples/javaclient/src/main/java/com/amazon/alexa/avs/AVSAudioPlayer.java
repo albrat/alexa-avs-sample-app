@@ -1,10 +1,14 @@
-/**
- * Copyright 2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+/** 
+ * Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
- * You may not use this file except in compliance with the License. A copy of the License is located the "LICENSE.txt"
- * file accompanying this source. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the specific language governing permissions and limitations
- * under the License.
+ * Licensed under the Amazon Software License (the "License"). You may not use this file 
+ * except in compliance with the License. A copy of the License is located at
+ *
+ *   http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the 
+ * specific language governing permissions and limitations under the License.
  */
 package com.amazon.alexa.avs;
 
@@ -32,9 +36,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
@@ -60,6 +66,8 @@ public class AVSAudioPlayer {
     private Set<String> streamUrls;
     // Urls associated with the current stream that we've already tried to play
     private Set<String> attemptedUrls;
+    // Map of VLC-centric urls to file urls - we use this map to delete local files after playing
+    private Map<String, String> cachedAudioFiles;
     // Alarm thread
     private Thread alarmThread;
     // Speaker thread
@@ -126,6 +134,7 @@ public class AVSAudioPlayer {
         speakQueue = new LinkedList<SpeakItem>();
         streamUrls = new HashSet<String>();
         attemptedUrls = new HashSet<String>();
+        cachedAudioFiles = new HashMap<String, String>();
         setupAudioPlayer();
 
         currentVolume = audioPlayer.getMediaPlayer().getVolume();
@@ -173,6 +182,7 @@ public class AVSAudioPlayer {
         if (stream.hasAttachedContent()) {
             try {
                 File tmp = File.createTempFile(UUID.randomUUID().toString(), ".mp3");
+                tmp.deleteOnExit();
                 Files.copy(stream.getAttachedContent(), tmp.toPath(),
                         StandardCopyOption.REPLACE_EXISTING);
 
@@ -231,7 +241,7 @@ public class AVSAudioPlayer {
 
         audioPlayer.getMediaPlayer().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
 
-            private boolean playbackStartedSuccessully;
+            private boolean playbackStartedSuccessfully;
 
             private boolean bufferUnderrunInProgress;
 
@@ -240,7 +250,7 @@ public class AVSAudioPlayer {
             @Override
             public void newMedia(MediaPlayer mediaPlayer) {
                 log.debug("newMedia: {}", mediaPlayer.mrl());
-                playbackStartedSuccessully = false;
+                playbackStartedSuccessfully = false;
                 bufferUnderrunInProgress = false;
             }
 
@@ -255,7 +265,7 @@ public class AVSAudioPlayer {
                 long length = audioPlayer.getMediaPlayer().getLength();
                 log.debug("    length: {}", length);
 
-                if (isPaused && playbackStartedSuccessully) {
+                if (isPaused && playbackStartedSuccessfully) {
                     audioPlayerStateMachine.playbackResumed();
                     isPaused = false;
                 }
@@ -263,7 +273,7 @@ public class AVSAudioPlayer {
 
             @Override
             public void buffering(MediaPlayer mediaPlayer, float newCache) {
-                if (playbackStartedSuccessully && !bufferUnderrunInProgress) {
+                if (playbackStartedSuccessfully && !bufferUnderrunInProgress) {
                     // We started buffering mid playback
                     bufferUnderrunInProgress = true;
                     playbackStutterStartedOffsetInMilliseconds = getCurrentOffsetInMilliseconds();
@@ -276,10 +286,19 @@ public class AVSAudioPlayer {
                     audioPlayerStateMachine.playbackStutterFinished();
                 }
 
-                if (!playbackStartedSuccessully && newCache >= 100.0f) {
+                if (!playbackStartedSuccessfully && newCache >= 100.0f) {
                     // We have successfully buffered the first time and started playback
-                    playbackStartedSuccessully = true;
+                    playbackStartedSuccessfully = true;
                     audioPlayerStateMachine.playbackStarted();
+
+                    Stream stream = playQueue.peek();
+                    if (stream != null) {
+                        if (stream.getProgressReportRequired()) {
+                            progressReporter.stop();
+                            progressReporter.start(stream.getProgressReport());
+                        }
+                    }
+
 
                     if (isPaused) {
                         audioPlayerStateMachine.playbackPaused();
@@ -290,7 +309,7 @@ public class AVSAudioPlayer {
             @Override
             public void paused(MediaPlayer mediaPlayer) {
                 log.debug("paused: {}", mediaPlayer.mrl());
-                if (playbackStartedSuccessully) {
+                if (playbackStartedSuccessfully) {
                     audioPlayerStateMachine.playbackPaused();
                 }
                 isPaused = true;
@@ -302,6 +321,13 @@ public class AVSAudioPlayer {
                 List<String> items = mediaPlayer.subItems();
                 // Remember the url we just tried
                 attemptedUrls.add(mediaPlayer.mrl());
+
+                if (cachedAudioFiles.containsKey(mediaPlayer.mrl())) {
+                    String key = mediaPlayer.mrl();
+                    String cachedUrl = cachedAudioFiles.get(key);
+                    deleteCachedFile(cachedUrl);
+                    cachedAudioFiles.remove(key);
+                }
 
                 if ((items.size() > 0) || (streamUrls.size() > 0)) {
                     // Add to the set of URLs to attempt playback
@@ -517,14 +543,9 @@ public class AVSAudioPlayer {
 
                 latestStreamToken = stream.getToken();
 
-                if (!playItem(stream.getUrl(), stream.getOffsetInMilliseconds())) {
+                if (!playItem(stream)) {
                     // an error will be reported from the vlcj listener
                     return;
-                }
-
-                if (stream.getProgressReportRequired()) {
-                    progressReporter.stop();
-                    progressReporter.start(stream.getProgressReport());
                 }
 
                 if (isSpeaking() || isAlarming()) {
@@ -539,13 +560,11 @@ public class AVSAudioPlayer {
     /**
      * Play the media from the given url, at the given offset
      *
-     * @param url
-     *            Media item to play
-     * @param offset
-     *            Offset from the start to play at in milliseconds
+     * @param stream
+     *            The Stream object we will be playing
      * @return true if played successfully, false otherwise
      */
-    private boolean playItem(final String url, final long offset) {
+    private boolean playItem(Stream stream) {
         synchronized (audioPlayer.getMediaPlayer()) {
             // we are no longer in "PAUSED" state
             stopOffset = -1;
@@ -556,6 +575,9 @@ public class AVSAudioPlayer {
 
             setupAudioPlayer();
 
+            String url = stream.getUrl();
+            long offset = stream.getOffsetInMilliseconds();
+
             log.debug("playing {}", url);
 
             if (audioPlayer.getMediaPlayer().startMedia(url)) {
@@ -563,6 +585,10 @@ public class AVSAudioPlayer {
                 audioPlayer.getMediaPlayer().mute(currentlyMuted);
                 if (offset > 0) {
                     audioPlayer.getMediaPlayer().setTime(offset);
+                }
+
+                if (stream.hasAttachedContent()) {
+                    cachedAudioFiles.put(audioPlayer.getMediaPlayer().mrl(), url);
                 }
 
                 return true;
@@ -589,8 +615,17 @@ public class AVSAudioPlayer {
      * Play items from the speech play queue
      */
     private void startSpeech() {
-        notifyAlexaSpeechStarted();
+
         final SpeakItem speak = speakQueue.peek();
+
+        // This addresses the possibility of the queue being cleared
+        // between the time of this function call and this line of code.
+        if (speak == null) {
+            return;
+        }
+
+        notifyAlexaSpeechStarted();
+
         speechState = SpeechState.PLAYING;
         latestToken = speak.getToken();
 
@@ -892,5 +927,10 @@ public class AVSAudioPlayer {
         void onAlexaSpeechStarted();
 
         void onAlexaSpeechFinished();
+    }
+
+    private void deleteCachedFile(final String uri) {
+        File file = new File(uri);
+        file.delete();
     }
 }
