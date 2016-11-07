@@ -56,7 +56,7 @@ typedef NS_ENUM(NSUInteger, API) {
 
   @since 1.0
  */
-@property (retain) id result;
+@property (strong) id result;
 
 /**
   The API returning the result.
@@ -83,7 +83,7 @@ typedef NS_ENUM(NSUInteger, API) {
 
   @since 1.0
 */
-@property (retain) AIError *error;
+@property (strong) AIError *error;
 
 /**
   The API which is returning the error.

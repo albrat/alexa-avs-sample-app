@@ -12,6 +12,13 @@
 
 #import <Foundation/Foundation.h>
 
+#pragma mark - Error domains
+
+/**
+  Login With Amazon error domain for NSErrors
+ */
+FOUNDATION_EXPORT NSString *const AIErrorDomain;
+
 #pragma mark - Error codes
 
 /**
@@ -44,12 +51,12 @@ extern const NSUInteger kAIApplicationNotAuthorized;
 extern const NSUInteger kAIServerError;
 
 /**
-  The user canceled the login page.
+  The user dismissed the page.
 
-  The user pressed cancel while on the login or the consent page. `[AIMobileLib authorizeUserForScopes:delegate:]` can
-  return this error.
+  The user pressed cancel while on an Amazon-provided page, such as login or consent.
+  `[AIMobileLib authorizeUserForScopes:delegate:]` can return this error.
 
-  Generally with this type of error, the app can allow the user to login again.
+  Generally with this type of error, the app can allow the user to perform the requested operation again.
 */
 extern const NSUInteger kAIErrorUserInterrupted;
 
@@ -141,6 +148,6 @@ extern const NSUInteger kAIVersionDenied;
 
   @since 1.0
 */
-@property (retain) NSString *message;
+@property (copy) NSString *message;
 
 @end

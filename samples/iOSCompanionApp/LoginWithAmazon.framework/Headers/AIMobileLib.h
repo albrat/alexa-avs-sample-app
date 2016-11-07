@@ -21,14 +21,14 @@
   Pass this key with a string value of "YES" to `getAccessTokenForScopes:withOverrideParams:delegate:` to force the
   method to refresh the access token.
 */
-extern const NSString *kForceRefresh;
+extern NSString *const kForceRefresh;
 
 /**
   Key name for defining whether sandbox mode is on.
  
   Pass this key with a string value of "YES" to `authorizeUserForScopes:delegate:options:` to switch to the sandbox mode.
  */
-extern const NSString *kAIOptionSandboxMode;
+extern NSString *const kAIOptionSandboxMode;
 
 /**
   Key name for defining the scope data parameter.
@@ -36,14 +36,14 @@ extern const NSString *kAIOptionSandboxMode;
   Pass this key with a Json encoded string of scope data to`authorizeUserForScopes:delegate:options` as required by certain 
   types of Amazon services.
 */
-extern const NSString *kAIOptionScopeData;
+extern NSString *const kAIOptionScopeData;
 
 /**
   Key name for defining whether to return authorization code.
  
   Pass this key with a BOOL value of `YES` to `authorizeUserForScopes:delegate:options` to get back an authorization code.
 */
-extern const NSString *kAIOptionReturnAuthCode;
+extern NSString *const kAIOptionReturnAuthCode;
 
 /**
   Key name for defining the SPOP code challenge parameter.
@@ -51,7 +51,7 @@ extern const NSString *kAIOptionReturnAuthCode;
  Pass this key with a string value into the `options` object used when calling `authorizeUserForScopes:delegate:options`
  with kAIOptionReturnAuthCode as `YES`.
 */
-extern const NSString *kAIOptionCodeChallenge;
+extern NSString *const kAIOptionCodeChallenge;
 
 /**
   Key name for defining the SPOP code challenge method parameter. (Optional)
@@ -59,7 +59,7 @@ extern const NSString *kAIOptionCodeChallenge;
   Pass this key with a string value into the `options` object used when calling `authorizeUserForScopes:delegate:options`
   with kAIOptionReturnAuthCode as `YES`.
  */
-extern const NSString *kAIOptionCodeChallengeMethod;    
+extern NSString *const kAIOptionCodeChallengeMethod;
 
 /**
   AIMobileLib is a static class that contains Login with Amazon APIs.
@@ -228,7 +228,7 @@ extern const NSString *kAIOptionCodeChallengeMethod;
   `[UIApplicationDelegate application:openURL:sourceApplication:annotation]` call from the Safari web browser. The app
   should be calling this function when it receives a call to
   `[UIApplicationDelegate application:openURL:sourceApplication:annotation]`, passing in the `url` and the
-  `sourceApplication`. If the app fails to do so, the SDK will not be able to complete the login flow.
+  `sourceApplication`. If app fails to do so, the SDK will not be able to complete the login flow.
 
   The SDK validates the `url` parameter to see if it is valid for the SDK. It is possible the app may want to handle the
   `url` as well, in which case the app should first call the SDK to see if this `url` is a callback from Safari and if

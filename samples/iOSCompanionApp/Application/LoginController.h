@@ -13,7 +13,7 @@
 #import <LoginWithAmazon/LoginWithAmazon.h>
 #import "ProvisioningClient.h"
 
-@interface LoginController : UIViewController<AIAuthenticationDelegate, ProvisioningClientDelegate>
+@interface LoginController : UIViewController<ProvisioningClientDelegate>
 
 // Properties for UI Controls
 @property (weak, nonatomic) IBOutlet UIButton *loginButton;

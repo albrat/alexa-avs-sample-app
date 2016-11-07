@@ -15,3 +15,12 @@
 #import "AIMobileLib.h"
 #import "AIAuthenticationDelegate.h"
 #import "AIError.h"
+
+#import "AMZNScope.h"
+#import "AMZNProfileScope.h"
+#import "AMZNScopeFactory.h"
+#import "AMZNUser.h"
+#import "AMZNAuthorizeRequest.h"
+#import "AMZNAuthorizeResult.h"
+#import "AMZNAuthorizationManager.h"
+#import "AMZNLWASDKInfo.h"

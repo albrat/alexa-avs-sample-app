@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * You may not use this file except in compliance with the License. A copy of the License is located the "LICENSE.txt"
  * file accompanying this source. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -28,9 +28,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.amazon.identity.auth.device.AuthError;
-import com.amazon.identity.auth.device.authorization.api.AmazonAuthorizationManager;
-import com.amazon.identity.auth.device.authorization.api.AuthorizationListener;
-import com.amazon.identity.auth.device.authorization.api.AuthzConstants;
+import com.amazon.identity.auth.device.api.authorization.AuthCancellation;
+import com.amazon.identity.auth.device.api.authorization.AuthorizationManager;
+import com.amazon.identity.auth.device.api.authorization.AuthorizeListener;
+import com.amazon.identity.auth.device.api.authorization.AuthorizeRequest;
+import com.amazon.identity.auth.device.api.authorization.AuthorizeResult;
+import com.amazon.identity.auth.device.api.authorization.ScopeFactory;
+import com.amazon.identity.auth.device.api.workflow.RequestContext;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,13 +49,11 @@ public class LoginWithAmazonActivity extends AppCompatActivity {
 
     private static final String BUNDLE_KEY_EXCEPTION = "exception";
 
-    private static final String[] APP_SCOPES= { ALEXA_ALL_SCOPE };
-
     private static final int MIN_CONNECT_PROGRESS_TIME_MS = 1*1000;
 
-    private AmazonAuthorizationManager mAuthManager;
     private ProvisioningClient mProvisioningClient;
     private DeviceProvisioningInfo mDeviceProvisioningInfo;
+    private RequestContext mRequestContext;
 
     private EditText mAddressTextView;
     private Button mConnectButton;
@@ -63,6 +65,9 @@ public class LoginWithAmazonActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mRequestContext = RequestContext.create(this);
+        mRequestContext.registerListener(new AuthorizeListenerImpl());
 
         setContentView(R.layout.lwa_activity);
 
@@ -76,14 +81,6 @@ public class LoginWithAmazonActivity extends AppCompatActivity {
         mLoginMessage = (TextView) findViewById(R.id.loginMessage);
 
         connectCleanState();
-
-        try {
-            mAuthManager = new AmazonAuthorizationManager(this, Bundle.EMPTY);
-        } catch(IllegalArgumentException e) {
-            connectErrorState();
-            showAlertDialog(e);
-            Log.e(TAG, "Unable to use Amazon Authorization Manager. APIKey is incorrect or does not exist.", e);
-        }
 
         try {
             mProvisioningClient = new ProvisioningClient(this);
@@ -160,31 +157,32 @@ public class LoginWithAmazonActivity extends AppCompatActivity {
             public void onClick(View v) {
                 loginInProgressState();
 
-                Bundle options = new Bundle();
-
-                JSONObject scopeData = new JSONObject();
-                JSONObject productInfo = new JSONObject();
-                JSONObject productInstanceAttributes = new JSONObject();
+                final JSONObject scopeData = new JSONObject();
+                final JSONObject productInstanceAttributes = new JSONObject();
+                final String codeChallenge = mDeviceProvisioningInfo.getCodeChallenge();
+                final String codeChallengeMethod = mDeviceProvisioningInfo.getCodeChallengeMethod();
 
                 try {
                     productInstanceAttributes.put(DEVICE_SERIAL_NUMBER, mDeviceProvisioningInfo.getDsn());
-                    productInfo.put(PRODUCT_ID, mDeviceProvisioningInfo.getProductId());
-                    productInfo.put(PRODUCT_INSTANCE_ATTRIBUTES, productInstanceAttributes);
-                    scopeData.put(ALEXA_ALL_SCOPE, productInfo);
+                    scopeData.put(PRODUCT_INSTANCE_ATTRIBUTES, productInstanceAttributes);
+                    scopeData.put(PRODUCT_ID, mDeviceProvisioningInfo.getProductId());
 
-                    String codeChallenge = mDeviceProvisioningInfo.getCodeChallenge();
-                    String codeChallengeMethod = mDeviceProvisioningInfo.getCodeChallengeMethod();
-
-                    options.putString(AuthzConstants.BUNDLE_KEY.SCOPE_DATA.val, scopeData.toString());
-                    options.putBoolean(AuthzConstants.BUNDLE_KEY.GET_AUTH_CODE.val, true);
-                    options.putString(AuthzConstants.BUNDLE_KEY.CODE_CHALLENGE.val, codeChallenge);
-                    options.putString(AuthzConstants.BUNDLE_KEY.CODE_CHALLENGE_METHOD.val, codeChallengeMethod);
-                    mAuthManager.authorize(APP_SCOPES, options, new AuthListener());
+                    AuthorizationManager.authorize(new AuthorizeRequest.Builder(mRequestContext)
+                            .addScope(ScopeFactory.scopeNamed(ALEXA_ALL_SCOPE, scopeData))
+                            .forGrantType(AuthorizeRequest.GrantType.AUTHORIZATION_CODE)
+                            .withProofKeyParameters(codeChallenge, codeChallengeMethod)
+                            .build());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mRequestContext.onResume();
     }
 
     private void connectCleanState() {
@@ -253,65 +251,61 @@ public class LoginWithAmazonActivity extends AppCompatActivity {
         dialogFragment.show(fm, "error_dialog");
     }
 
-    private class AuthListener implements AuthorizationListener {
+    private class AuthorizeListenerImpl extends AuthorizeListener {
         @Override
-        public void onSuccess(Bundle response) {
-            try {
-                final String authorizationCode = response.getString(AuthzConstants.BUNDLE_KEY.AUTHORIZATION_CODE.val);
-                final String redirectUri = mAuthManager.getRedirectUri();
-                final String clientId = mAuthManager.getClientId();
-                final String sessionId = mDeviceProvisioningInfo.getSessionId();
+        public void onSuccess(final AuthorizeResult authorizeResult) {
+            final String authorizationCode = authorizeResult.getAuthorizationCode();
+            final String redirectUri = authorizeResult.getRedirectURI();
+            final String clientId = authorizeResult.getClientId();
+            final String sessionId = mDeviceProvisioningInfo.getSessionId();
 
-                final CompanionProvisioningInfo companionProvisioningInfo = new CompanionProvisioningInfo(sessionId, clientId, redirectUri, authorizationCode);
+            final CompanionProvisioningInfo companionProvisioningInfo = new CompanionProvisioningInfo(sessionId, clientId, redirectUri, authorizationCode);
 
-                new AsyncTask<Void, Void, Void>() {
-                    private Exception errorInBackground;
+            new AsyncTask<Void, Void, Void>() {
+                private Exception errorInBackground;
 
-                    @Override
-                    protected void onPreExecute() {
-                        super.onPreExecute();
-                        loginInProgressState();
+                @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
+                    loginInProgressState();
+                }
+
+                @Override
+                protected Void doInBackground(Void... voids) {
+                    try {
+                        mProvisioningClient.postCompanionProvisioningInfo(companionProvisioningInfo);
+                    } catch (Exception e) {
+                        errorInBackground = e;
                     }
+                    return null;
+                }
 
-                    @Override
-                    protected Void doInBackground(Void... voids) {
-                        try {
-                            mProvisioningClient.postCompanionProvisioningInfo(companionProvisioningInfo);
-                        } catch (Exception e) {
-                            errorInBackground = e;
-                        }
-                        return null;
+                @Override
+                protected void onPostExecute(Void result) {
+                    super.onPostExecute(result);
+                    if (errorInBackground != null) {
+                        connectCleanState();
+                        showAlertDialog(errorInBackground);
+                    } else {
+                        loginSuccessState();
                     }
-
-                    @Override
-                    protected void onPostExecute(Void result) {
-                        super.onPostExecute(result);
-                        if (errorInBackground != null) {
-                            connectCleanState();
-                            showAlertDialog(errorInBackground);
-                        } else {
-                            loginSuccessState();
-                        }
-                    }
-                }.execute();
-            } catch (AuthError authError) {
-                authError.printStackTrace();
-            }
+                }
+            }.execute();
         }
 
         @Override
-        public void onError(final AuthError ae) {
-            Log.e(TAG, "AuthError during authorization", ae);
+        public void onError(final AuthError authError) {
+            Log.e(TAG, "AuthError during authorization", authError);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    showAlertDialog(ae);
+                    showAlertDialog(authError);
                 }
             });
         }
 
         @Override
-        public void onCancel(Bundle cause) {
+        public void onCancel(final AuthCancellation authCancellation) {
             Log.e(TAG, "User cancelled authorization");
         }
     }

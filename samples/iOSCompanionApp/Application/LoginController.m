@@ -46,18 +46,31 @@
 }
 
 - (IBAction) onLogInButtonClicked:(id)sender {
+    NSDictionary *scopeData = @{@"productID": self.productId,
+                                @"productInstanceAttributes": @{@"deviceSerialNumber": self.dsn}};
 
-    NSArray *requestScopes = @[@"alexa:all"];
+    id<AMZNScope> alexaAllScope = [AMZNScopeFactory scopeWithName:@"alexa:all" data:scopeData];
 
-    NSString* scopeData = [NSString stringWithFormat:@"{\"alexa:all\":{\"productID\":\"%@\", "
-                           "\"productInstanceAttributes\":{\"deviceSerialNumber\":\"%@\"}}}",
-                           self.productId, self.dsn];
-    NSDictionary *options = @{kAIOptionScopeData:scopeData,
-                              kAIOptionReturnAuthCode:@YES,
-                              kAIOptionCodeChallenge:self.codeChallenge,
-                              kAIOptionCodeChallengeMethod:@"S256"};
+    AMZNAuthorizeRequest *request = [[AMZNAuthorizeRequest alloc] init];
+    request.scopes = @[alexaAllScope];
+    request.codeChallenge = self.codeChallenge;
+    request.codeChallengeMethod = @"S256";
+    request.grantType = AMZNAuthorizationGrantTypeCode;
 
-    [AIMobileLib authorizeUserForScopes:requestScopes delegate:self options:options];
+    AMZNAuthorizationManager *authManager = [AMZNAuthorizationManager sharedManager];
+    [authManager authorize:request withHandler:^(AMZNAuthorizeResult *result, BOOL userDidCancel, NSError *error) {
+        if (error) {
+            // Notify the user that authorization failed
+            [[[UIAlertView alloc] initWithTitle:@"" message:[NSString stringWithFormat:@"User authorization failed due to an error: %@", error.localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        } else if (userDidCancel) {
+            // Notify the user that the authorization was cancelled
+            [[[UIAlertView alloc] initWithTitle:@"" message:@"Authorization was cancelled prior to completion. To continue, you will need to try logging in again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        } else {
+            // Fetch the authorization code and return to controller
+            self.authCode = result.authorizationCode;
+            [self userSuccessfullySignedIn];
+        }
+    }];
 }
 
 -(void) userSuccessfullySignedIn {
@@ -84,19 +97,6 @@
 
 - (void) deviceSuccessfulyProvisioned {
     self.provisionSuccessText.hidden = NO;
-}
-
-#pragma mark Implementation of authorizeUserForScopes:delegate: delegates.
-- (void)requestDidSucceed:(APIResult *)apiResult {
-    // Fetch the authorization code and return to controller
-    self.authCode = apiResult.result;
-    [self userSuccessfullySignedIn];
-    
-}
-
-- (void)requestDidFail:(APIError *)errorResponse {
-    // Notify the user that authorization failed
-    [[[UIAlertView alloc] initWithTitle:@"" message:[NSString stringWithFormat:@"User authorization failed with message: %@", errorResponse.error.message] delegate:nil cancelButtonTitle:@"OK"otherButtonTitles:nil] show];
 }
 
 #pragma mark View controller specific functions
