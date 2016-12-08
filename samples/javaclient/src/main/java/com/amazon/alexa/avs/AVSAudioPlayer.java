@@ -83,7 +83,9 @@ public class AVSAudioPlayer {
     private static final int VLCJ_MIN_VOLUME = 0;
     private static final int VLCJ_MAX_VOLUME = 200;
 
-    private long stopOffset;
+    // VLC's elapsed time doesn't work correctly. So we're using System.nanoTime() to get accurate
+    // timestamps
+    private AudioPlayerTimer timer;
     // track the last progressReport sent time
     private boolean waitForPlaybackFinished;
     // used for speak directives and earcons
@@ -128,7 +130,7 @@ public class AVSAudioPlayer {
     public AVSAudioPlayer(AVSController controller) {
         this.controller = controller;
         resLoader = Thread.currentThread().getContextClassLoader();
-        stopOffset = -1;
+        timer = new AudioPlayerTimer();
         waitForPlaybackFinished = false;
         playQueue = new LinkedList<Stream>();
         speakQueue = new LinkedList<SpeakItem>();
@@ -144,7 +146,7 @@ public class AVSAudioPlayer {
 
         progressReporter = new AudioPlayerProgressReporter(
                 new ProgressReportDelayEventRunnable(audioPlayerStateMachine),
-                new ProgressReportIntervalEventRunnable(audioPlayerStateMachine));
+                new ProgressReportIntervalEventRunnable(audioPlayerStateMachine), timer);
 
         listeners = new HashSet<>();
     }
@@ -199,8 +201,10 @@ public class AVSAudioPlayer {
     }
 
     public void handleStop() {
-        stop();
-        audioPlayerStateMachine.playbackStopped();
+        synchronized (audioPlayer.getMediaPlayer()) {
+            stop();
+            audioPlayerStateMachine.playbackStopped();
+        }
     }
 
     public void handleClearQueue(ClearQueue clearQueue) {
@@ -269,14 +273,24 @@ public class AVSAudioPlayer {
                     audioPlayerStateMachine.playbackResumed();
                     isPaused = false;
                 }
+
+                startTimerAndProgressReporter();
             }
 
             @Override
             public void buffering(MediaPlayer mediaPlayer, float newCache) {
+                Stream stream = playQueue.peek();
+                if (stream == null) {
+                    return;
+                }
                 if (playbackStartedSuccessfully && !bufferUnderrunInProgress) {
                     // We started buffering mid playback
                     bufferUnderrunInProgress = true;
-                    playbackStutterStartedOffsetInMilliseconds = getCurrentOffsetInMilliseconds();
+                    long startOffset = 0;
+                    startOffset = stream.getOffsetInMilliseconds();
+                    playbackStutterStartedOffsetInMilliseconds =
+                            Math.max(startOffset, getCurrentOffsetInMilliseconds());
+                    stopTimerAndProgressReporter();
                     audioPlayerStateMachine.playbackStutterStarted();
                 }
 
@@ -284,21 +298,23 @@ public class AVSAudioPlayer {
                     // We are fully buffered after a buffer underrun event
                     bufferUnderrunInProgress = false;
                     audioPlayerStateMachine.playbackStutterFinished();
+                    startTimerAndProgressReporter();
                 }
 
                 if (!playbackStartedSuccessfully && newCache >= 100.0f) {
                     // We have successfully buffered the first time and started playback
                     playbackStartedSuccessfully = true;
-                    audioPlayerStateMachine.playbackStarted();
 
-                    Stream stream = playQueue.peek();
-                    if (stream != null) {
-                        if (stream.getProgressReportRequired()) {
-                            progressReporter.stop();
-                            progressReporter.start(stream.getProgressReport());
-                        }
+                    long offset = stream.getOffsetInMilliseconds();
+
+                    timer.reset(offset, audioPlayer.getMediaPlayer().getLength());
+                    progressReporter.disable();
+                    if (stream.getProgressReportRequired()) {
+                        progressReporter.setup(stream.getProgressReport());
                     }
 
+                    audioPlayerStateMachine.playbackStarted();
+                    startTimerAndProgressReporter();
 
                     if (isPaused) {
                         audioPlayerStateMachine.playbackPaused();
@@ -309,6 +325,7 @@ public class AVSAudioPlayer {
             @Override
             public void paused(MediaPlayer mediaPlayer) {
                 log.debug("paused: {}", mediaPlayer.mrl());
+                stopTimerAndProgressReporter();
                 if (playbackStartedSuccessfully) {
                     audioPlayerStateMachine.playbackPaused();
                 }
@@ -355,7 +372,7 @@ public class AVSAudioPlayer {
                 // remove the item from the queue since it has finished playing
                 playQueue.poll();
 
-                progressReporter.stop();
+                stopTimerAndProgressReporter();
                 audioPlayerStateMachine.playbackNearlyFinished();
                 audioPlayerStateMachine.playbackFinished();
 
@@ -387,10 +404,9 @@ public class AVSAudioPlayer {
                     } catch (Exception e) {
                     }
                 }
-                progressReporter.stop();
                 playQueue.clear();
+                stopTimerAndProgressReporter();
                 audioPlayerStateMachine.playbackFailed();
-
             }
         });
     }
@@ -405,9 +421,14 @@ public class AVSAudioPlayer {
     /**
      * Returns true if Alexa is currently playing media
      */
-    public boolean isPlaying() {
+    public boolean isPlayingOrPaused() {
+        return isPlaying() || audioPlayerStateMachine.getState() == AudioPlayerState.PAUSED;
+    }
+
+    private boolean isPlaying() {
         return (audioPlayerStateMachine.getState() == AudioPlayerState.PLAYING
-                || audioPlayerStateMachine.getState() == AudioPlayerState.PAUSED);
+                || audioPlayerStateMachine.getState() == AudioPlayerState.PAUSED
+                || audioPlayerStateMachine.getState() == AudioPlayerState.BUFFER_UNDERRUN);
     }
 
     /**
@@ -447,9 +468,7 @@ public class AVSAudioPlayer {
     private void interruptContent() {
 
         synchronized (audioPlayer.getMediaPlayer()) {
-            if (!playQueue.isEmpty() && (stopOffset == -1)
-                    && audioPlayer.getMediaPlayer().isPlaying()) {
-                progressReporter.pause();
+            if (!playQueue.isEmpty() && isPlaying() && audioPlayer.getMediaPlayer().isPlaying()) {
                 audioPlayer.getMediaPlayer().pause();
             }
         }
@@ -481,9 +500,8 @@ public class AVSAudioPlayer {
      */
     private void resumeContent() {
         synchronized (audioPlayer.getMediaPlayer()) {
-            if (!playQueue.isEmpty() && (stopOffset == -1)
+            if (!playQueue.isEmpty() && isPlayingOrPaused()
                     && !audioPlayer.getMediaPlayer().isPlaying()) {
-                progressReporter.resume();
                 // Pause toggles the pause state of the media player, if it was previously paused it
                 // will be resumed.
                 audioPlayer.getMediaPlayer().pause();
@@ -566,19 +584,21 @@ public class AVSAudioPlayer {
      */
     private boolean playItem(Stream stream) {
         synchronized (audioPlayer.getMediaPlayer()) {
-            // we are no longer in "PAUSED" state
-            stopOffset = -1;
 
             // Reset url caches and state information
             streamUrls = new HashSet<String>();
             attemptedUrls = new HashSet<String>();
 
+            // Resetting the audio player is necessary to prevent hanging behavior
+            // when listening to some long-running music tracks
             setupAudioPlayer();
 
             String url = stream.getUrl();
             long offset = stream.getOffsetInMilliseconds();
 
             log.debug("playing {}", url);
+
+            timer.reset(); // Clear the old values
 
             if (audioPlayer.getMediaPlayer().startMedia(url)) {
                 audioPlayer.getMediaPlayer().setVolume(currentVolume);
@@ -602,10 +622,11 @@ public class AVSAudioPlayer {
      */
     public void stop() {
         synchronized (audioPlayer.getMediaPlayer()) {
-            if (!playQueue.isEmpty() && (stopOffset == -1)) {
-                stopOffset = getProgress();
+            if (!playQueue.isEmpty() && isPlayingOrPaused()) {
 
-                progressReporter.stop();
+                // Stop keeping track of the offset and sending reporting events
+                stopTimerAndProgressReporter();
+
                 audioPlayer.getMediaPlayer().stop();
             }
         }
@@ -702,8 +723,26 @@ public class AVSAudioPlayer {
      */
     private long getProgress() {
         synchronized (audioPlayer.getMediaPlayer()) {
-            return audioPlayer.getMediaPlayer().getTime();
+            return timer.getOffsetInMilliseconds();
         }
+    }
+
+    /**
+     * Start/resume the AudioPlayer Timer and ProgressReporter
+     */
+    private void startTimerAndProgressReporter() {
+        timer.start();
+        if (progressReporter.isSetup()) {
+            progressReporter.start();
+        }
+    }
+
+    /**
+     * Stop/pause the AudioPlayer Timer and ProgressReporter
+     */
+    private void stopTimerAndProgressReporter() {
+        timer.stop();
+        progressReporter.stop();
     }
 
     /**
@@ -728,17 +767,21 @@ public class AVSAudioPlayer {
     public long getCurrentOffsetInMilliseconds() {
         AudioPlayerState playerActivity = audioPlayerStateMachine.getState();
 
-        long offset = 0;
-
-        if (playerActivity == AudioPlayerState.PLAYING
-                || playerActivity == AudioPlayerState.PAUSED) {
-            offset = getProgress();
-        } else if (playerActivity == AudioPlayerState.STOPPED
-                || playerActivity == AudioPlayerState.FINISHED) {
-            offset = stopOffset;
+        long offset;
+        switch (playerActivity) {
+            case PLAYING:
+            case PAUSED:
+            case BUFFER_UNDERRUN:
+            case STOPPED:
+            case FINISHED:
+                offset = getProgress();
+                break;
+            case IDLE:
+            default:
+                offset = 0;
         }
 
-        return Math.max(0, offset);
+        return offset;
     }
 
     /**

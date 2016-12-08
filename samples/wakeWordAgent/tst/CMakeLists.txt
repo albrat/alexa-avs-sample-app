@@ -8,11 +8,13 @@ set( WAKE_WORD_AGENT_TEST_SOURCE
         testKittAi.cpp
         testIPCFactory.cpp
         testSensory.cpp
+        testGPIO.cpp
         ../src/IPCInterface.cpp
         ../src/KittAiSnowboyWakeWordEngine.cpp
         ../src/Logger.cpp
         ../src/PortAudioWrapper.cpp
         ../src/SensoryWakeWordEngine.cpp
+        ../src/GPIOWakeWordEngine.cpp
         ../src/WakeWordAgent.cpp
         ../src/WakeWordEngine.cpp
         ../src/WakeWordEngineFactory.cpp
@@ -26,7 +28,8 @@ set( WAKE_WORD_AGENT_TEST_LIBS
         blas
         portaudio
         asound
-        sensory )
+        sensory
+        wiringPi )
 
 find_package( Threads )
 set( CMAKE_THREAD_PREFER_PTHREAD TRUE )

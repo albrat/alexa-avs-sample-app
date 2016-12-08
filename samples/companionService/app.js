@@ -74,7 +74,7 @@ app.get('/authresponse', function (req, res) {
 
 // standard error handling functions.
 app.use(function (req, res, next) {
-    var err = new Error('Not Found');
+    var err = new Error('Not Found: ' + req.url);
     err.status = 404;
     next(err);
 });

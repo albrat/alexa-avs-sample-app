@@ -1,13 +1,13 @@
 /**
  * Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
- * Licensed under the Amazon Software License (the "License"). You may not use this file 
+ * Licensed under the Amazon Software License (the "License"). You may not use this file
  * except in compliance with the License. A copy of the License is located at
  *
  *   http://aws.amazon.com/asl/
  *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" 
- * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License 
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS"
+ * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License
  * for the specific language governing permissions and limitations under the License.
  */
 
@@ -65,7 +65,18 @@ void WakeWordAgent::mainLoop() {
 
   log(Logger::INFO, "WakeWordAgent: thread started");
 
+  std::unique_lock<std::mutex> lck(m_mtx);
+
+  auto checkState = [this] {
+    return m_currentState == State::WAKE_WORD_DETECTED
+    || m_currentState == State::WAKE_WORD_PAUSE_REQUESTED
+    || m_currentState == State::WAKE_WORD_RESUME_REQUESTED;
+  };
+
   while (m_isRunning) {
+
+    // Wait for a state where an action is required
+    m_cvStateChange.wait(lck, checkState);
 
     try {
 
@@ -106,8 +117,11 @@ void WakeWordAgent::onWakeWordDetected() {
 
   log(Logger::INFO, "===> WakeWordAgent: wake word detected <===");
 
-  if(State::IDLE == m_currentState) {
+  if(State::IDLE == m_currentState ||
+      State::SENT_WAKE_WORD_DETECTED == m_currentState) {
+    std::lock_guard<std::mutex> lock(m_mtx);
     setState(State::WAKE_WORD_DETECTED);
+    m_cvStateChange.notify_one();
   }
 }
 
@@ -124,12 +138,16 @@ void WakeWordAgent::onIPCCommandReceived(IPCInterface::Command command) {
     case State::IDLE:
     case State::SENT_WAKE_WORD_DETECTED:
       if (IPCInterface::PAUSE_WAKE_WORD_ENGINE == command) {
+        std::lock_guard<std::mutex> lock(m_mtx);
         setState(State::WAKE_WORD_PAUSE_REQUESTED);
+        m_cvStateChange.notify_one();
       }
       break;
     case State::WAKE_WORD_PAUSED:
       if(IPCInterface::Command::RESUME_WAKE_WORD_ENGINE == command) {
+        std::lock_guard<std::mutex> lock(m_mtx);
         setState(State::WAKE_WORD_RESUME_REQUESTED);
+        m_cvStateChange.notify_one();
       }
       break;
     default:

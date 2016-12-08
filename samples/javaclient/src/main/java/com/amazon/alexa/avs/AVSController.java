@@ -513,7 +513,7 @@ public class AVSController implements RecordingStateListener, AlertHandler, Aler
     }
 
     public boolean isPlaying() {
-        return player.isPlaying();
+        return player.isPlayingOrPaused();
     }
 
     @Override

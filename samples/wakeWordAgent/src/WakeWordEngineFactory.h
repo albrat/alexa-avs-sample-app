@@ -27,7 +27,8 @@ namespace WakeWordEngineFactory {
 // Currently supported wake-word audio engines
 enum class EngineType {
   KITT_AI_SNOWBOY_ENGINE = 1,
-  SENSORY_ENGINE = 2
+  SENSORY_ENGINE = 2,
+  GPIO_ENGINE = 3
 };
 
 // Creation function

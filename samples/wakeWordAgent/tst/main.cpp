@@ -17,6 +17,7 @@
 #include "testKittAi.h"
 #include "testSensory.h"
 #include "testIPCFactory.h"
+#include "testGPIO.h"
 #include "unistd.h"
 
 using namespace std;
@@ -47,6 +48,14 @@ int main() {
   }
 
   std::cout << " **** Sensory tests passed ok ****" << std::endl;
+
+  // GPIO
+  if(!testGPIO()) {
+    std::cout << "ERROR testing GPIO functionality" << std::endl;
+    return 0;
+  }
+
+  std::cout << " **** GPIO tests passed ok ****" << std::endl;
 
   // ipc factory
   if(!testIPCFactory()) {

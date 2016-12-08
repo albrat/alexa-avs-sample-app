@@ -12,10 +12,15 @@
  */
 package com.amazon.alexa.avs.http;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.Callable;
 
 public abstract class AbstractRetryPolicy implements RetryPolicy {
     private int maxAttempts;
+
+    private static final Logger log = LoggerFactory.getLogger(AbstractRetryPolicy.class);
 
     public AbstractRetryPolicy(int maxAttempts) {
         this.maxAttempts = maxAttempts;
@@ -36,6 +41,7 @@ public abstract class AbstractRetryPolicy implements RetryPolicy {
                 attempts++;
                 if ((exception != null) && (exception.isAssignableFrom(e.getClass()))
                         && !(attempts >= maxAttempts)) {
+                    log.warn("Error occured while making call. This call will retry.", e);
                     Thread.sleep(getDelay(attempts));
                 } else {
                     throw e;

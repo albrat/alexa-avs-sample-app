@@ -1,13 +1,13 @@
-/** 
+/**
  * Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
- * Licensed under the Amazon Software License (the "License"). You may not use this file 
+ * Licensed under the Amazon Software License (the "License"). You may not use this file
  * except in compliance with the License. A copy of the License is located at
  *
  *   http://aws.amazon.com/asl/
  *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the 
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
 package com.amazon.alexa.avs.http;
@@ -19,6 +19,7 @@ import com.amazon.alexa.avs.config.ObjectMapperFactory;
 import com.amazon.alexa.avs.exception.AVSException;
 import com.amazon.alexa.avs.exception.AVSJsonProcessingException;
 import com.amazon.alexa.avs.exception.AlexaSystemException;
+import com.amazon.alexa.avs.exception.AlexaSystemExceptionCode;
 import com.amazon.alexa.avs.http.MultipartParser.MultipartParserConsumer;
 import com.amazon.alexa.avs.http.jetty.InputStreamResponseListener;
 import com.amazon.alexa.avs.http.jetty.PingSendingHttpClientTransportOverHTTP2;
@@ -214,7 +215,8 @@ public class AVSClient implements ConnectionListener {
         Callable<Void> task = new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                Request request = createRequest(avsRequest.getResource(), avsRequest.getContentProvider());
+                Request request =
+                        createRequest(avsRequest.getResource(), avsRequest.getContentProvider());
                 doRequestActual(request, avsRequest.getMultipartParser());
                 return null;
             }
@@ -349,8 +351,9 @@ public class AVSClient implements ConnectionListener {
         MultipartContentProvider multipartContent = new MultipartContentProvider();
         multipartContent.addPart(METADATA_NAME, createMetadataContent(body));
 
-        enqueueRequest(
-                new AVSRequest(Resource.EVENTS, multipartContent, new LinearRetryPolicy(REQUEST_RETRY_DELAY_MS, REQUEST_ATTEMPTS), requestResponseParser, listener));
+        enqueueRequest(new AVSRequest(Resource.EVENTS, multipartContent,
+                new LinearRetryPolicy(REQUEST_RETRY_DELAY_MS, REQUEST_ATTEMPTS),
+                requestResponseParser, listener));
     }
 
     /**
@@ -375,8 +378,18 @@ public class AVSClient implements ConnectionListener {
         multipartContent.addPart(METADATA_NAME, createMetadataContent(body));
         multipartContent.addPart(AUDIO_NAME, cachableContent);
 
-        enqueueRequest(
-                new AVSRequest(Resource.EVENTS, multipartContent, new LinearRetryPolicy(REQUEST_RETRY_DELAY_MS, REQUEST_ATTEMPTS), requestResponseParser, listener));
+        enqueueRequest(new AVSRequest(Resource.EVENTS, multipartContent,
+                new LinearRetryPolicy(REQUEST_RETRY_DELAY_MS, REQUEST_ATTEMPTS),
+                requestResponseParser, listener));
+    }
+
+    /**
+     * Get the Alexa Voice Service URL.
+     *
+     * @return URL the client is using for requests to Alexa Voice Service.
+     */
+    public URL getHost() {
+        return host;
     }
 
     private StringContentProvider createMetadataContent(RequestBody body)
@@ -474,8 +487,36 @@ public class AVSClient implements ConnectionListener {
         private void openConnection() {
             while (running) {
                 log.info("Establishing downchannel");
-                AVSRequest avsRequest =
-                        new AVSRequest(Resource.DIRECTIVES, null, new ExponentialRetryPolicy(REQUEST_RETRY_DELAY_MS, REQUEST_ATTEMPTS), downchannelParser);
+                AVSRequest avsRequest = new AVSRequest(Resource.DIRECTIVES, null,
+                        new ExponentialRetryPolicy(REQUEST_RETRY_DELAY_MS, REQUEST_ATTEMPTS),
+                        downchannelParser, new RequestListener() {
+
+                            @Override
+                            public void onRequestSuccess() {
+                            }
+
+                            @Override
+                            public void onRequestError(Throwable e) {
+                                if (shouldExceptionCauseShutdown(e)) {
+                                    shutdownGracefully();
+                                }
+                            }
+
+                            /**
+                             * Determines if the encountered error is one that should cause the
+                             * downchannel to shutdown.
+                             *
+                             * @param e
+                             *            the encountered error
+                             * @return true if the downchannel should be shutdown, false otherwise
+                             */
+                            private boolean shouldExceptionCauseShutdown(Throwable e) {
+                                return (e instanceof AlexaSystemException)
+                                        && (AlexaSystemExceptionCode.UNAUTHORIZED_REQUEST_EXCEPTION == ((AlexaSystemException) e)
+                                                .getExceptionCode());
+                            }
+
+                        });
                 doRequest(avsRequest);
                 log.info("Finishing downchannel");
             }

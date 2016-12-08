@@ -15,14 +15,16 @@ set( WAKE_WORD_AGENT_SOURCE
         WakeWordException.cpp
         KittAiSnowboyWakeWordEngine.cpp
         PortAudioWrapper.cpp
-        SensoryWakeWordEngine.cpp )
+        SensoryWakeWordEngine.cpp
+        GPIOWakeWordEngine.cpp )
 
 set( WAKE_WORD_AGENT_LIBS
         snowboy-detect
         blas
         portaudio
         asound
-        sensory )
+        sensory
+        wiringPi )
 
 find_package( Threads )
 set( CMAKE_THREAD_PREFER_PTHREAD TRUE )

@@ -16,6 +16,7 @@
 #include "WakeWordUtils.h"
 #include "KittAiSnowboyWakeWordEngine.h"
 #include "SensoryWakeWordEngine.h"
+#include "GPIOWakeWordEngine.h"
 
 using namespace AlexaWakeWord::Logger;
 
@@ -34,6 +35,9 @@ std::unique_ptr<WakeWordEngine> createEngine(
     case EngineType::SENSORY_ENGINE:
       log(Logger::DEBUG, "WakeWordEngineFactory: creating Sensory Engine");
       return make_unique<SensoryWakeWordEngine>(interface);
+    case EngineType::GPIO_ENGINE:
+      log(Logger::DEBUG, "WakeWordEngineFactory: creating GPIO Engine");
+      return make_unique<GPIOWakeWordEngine>(interface);
     default:
       log(Logger::ERROR, "WakeWordEngineFactory: unhandled switch case");
       return nullptr;
@@ -47,6 +51,8 @@ std::string engineTypeToString(const EngineType type) {
       return "KITT_AI_SNOWBOY_ENGINE";
     case EngineType::SENSORY_ENGINE:
       return "SENSORY_ENGINE";
+    case EngineType::GPIO_ENGINE:
+      return "GPIO_ENGINE";
     default:
       return "UNKNOWN";
   }

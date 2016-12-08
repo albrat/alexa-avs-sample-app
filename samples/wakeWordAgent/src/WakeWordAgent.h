@@ -1,13 +1,13 @@
 /**
  * Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
- * Licensed under the Amazon Software License (the "License"). You may not use this file 
+ * Licensed under the Amazon Software License (the "License"). You may not use this file
  * except in compliance with the License. A copy of the License is located at
  *
  *   http://aws.amazon.com/asl/
  *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" 
- * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License 
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS"
+ * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License
  * for the specific language governing permissions and limitations under the License.
  */
 
@@ -22,6 +22,8 @@
 #include <memory>
 #include <thread>
 #include <atomic>
+#include <condition_variable>
+#include <mutex>
 
 #include <time.h>
 
@@ -79,6 +81,10 @@ private:
   // The objects that handle wakeword detection and IPC
   std::unique_ptr<WakeWordEngine> m_wakeWordEngine;
   std::unique_ptr<WakeWordIPC> m_IPCHandler;
+
+  // Synchronization variables
+  std::mutex m_mtx;
+  std::condition_variable m_cvStateChange;
 };
 
 } // namespace AlexaWakeWord
