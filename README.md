@@ -1,4 +1,4 @@
-![](../../wiki/assets/alexa-logo.png)
+![](../../wiki/assets/amazon-alexa.png)
 
 ## About the project
 
