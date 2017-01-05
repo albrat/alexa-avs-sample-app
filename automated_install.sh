@@ -550,8 +550,9 @@ echo "To run the demo, do the following in $Number_Terminals seperate terminals:
 echo "Run the companion service: cd $Companion_Service_Loc && npm start"
 echo "Run the AVS Java Client: cd $Java_Client_Loc && mvn exec:exec"
 if [ "$Wake_Word_Detection_Enabled" = "true" ]; then
-  echo "Run the wake word agent: cd $Wake_Word_Agent_Loc/src && ./wakeWordAgent -e <engine_type>"
-  echo "  Engine type option is one of the following: kitt_ai or sensory."
-  echo "  PLEASE NOTE -- If using the gpio option, run the wake word agent as sudo:"
+  echo "Run the wake word agent: "
+  echo "  Sensory: cd $Wake_Word_Agent_Loc/src && ./wakeWordAgent -e sensory"
+  echo "  KITT_AI: cd $Wake_Word_Agent_Loc/src && ./wakeWordAgent -e kitt_ai"
+  echo "  GPIO: PLEASE NOTE -- If using this option, run the wake word agent as sudo:"
   echo "  cd $Wake_Word_Agent_Loc/src && sudo ./wakeWordAgent -e gpio"
 fi
