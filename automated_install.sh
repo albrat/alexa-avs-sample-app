@@ -30,7 +30,7 @@ City='SEATTLE'
 # Your organization name/company name. Cannot be blank.
 Organization='AVS_USER'
 # Your device serial number. Cannot be blank, but can be any combination of characters.
-DeviceSerialNumber='1xxxxxxxxxx'
+DeviceSerialNumber='123456789'
 # Your KeyStorePassword. We recommend leaving this blank for testing.
 KeyStorePassword=''
 
@@ -550,6 +550,8 @@ echo "To run the demo, do the following in $Number_Terminals seperate terminals:
 echo "Run the companion service: cd $Companion_Service_Loc && npm start"
 echo "Run the AVS Java Client: cd $Java_Client_Loc && mvn exec:exec"
 if [ "$Wake_Word_Detection_Enabled" = "true" ]; then
-  echo "Run the wake word agent: cd $Wake_Word_Agent_Loc/src && sudo ./wakeWordAgent -e <engine_type>"
-  echo "    where engine type option is one of the following: kitt_ai, sensory or gpio"
+  echo "Run the wake word agent: cd $Wake_Word_Agent_Loc/src && ./wakeWordAgent -e <engine_type>"
+  echo "  Engine type option is one of the following: kitt_ai or sensory."
+  echo "  PLEASE NOTE -- If using the gpio option, run the wake word agent as sudo:"
+  echo "  cd $Wake_Word_Agent_Loc/src && sudo ./wakeWordAgent -e gpio"
 fi
