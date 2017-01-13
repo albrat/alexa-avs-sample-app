@@ -19,6 +19,7 @@ import com.amazon.alexa.avs.config.DeviceConfig;
 import com.amazon.alexa.avs.config.DeviceConfigUtils;
 import com.amazon.alexa.avs.http.AVSClientFactory;
 import com.amazon.alexa.avs.wakeword.WakeWordDetectedHandler;
+import com.amazon.alexa.avs.wakeword.WakeWordIPCFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,10 +27,14 @@ import org.slf4j.LoggerFactory;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Desktop;
+import java.awt.Desktop.Action;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -48,12 +53,10 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
-import com.amazon.alexa.avs.wakeword.WakeWordIPCFactory;
-
 @SuppressWarnings("serial")
-public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMSListener,
-        RegCodeDisplayHandler, AccessTokenListener, ExpectStopCaptureListener,
-        WakeWordDetectedHandler {
+public class AVSApp extends JFrame
+        implements ExpectSpeechListener, RecordingRMSListener, RegCodeDisplayHandler,
+        AccessTokenListener, ExpectStopCaptureListener, WakeWordDetectedHandler {
 
     private static final Logger log = LoggerFactory.getLogger(AVSApp.class);
 
@@ -71,13 +74,15 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
     private JTextField tokenTextField;
     private JProgressBar visualizer;
     private final DeviceConfig deviceConfig;
- 
+
     private String accessToken;
 
     private AuthSetup authSetup;
 
     private enum ButtonState {
-        START, STOP, PROCESSING;
+        START,
+        STOP,
+        PROCESSING;
     }
 
     private ButtonState buttonState;
@@ -100,10 +105,9 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
 
     private AVSApp(DeviceConfig config) throws Exception {
         deviceConfig = config;
-        controller =
-                new AVSController(this, new AVSAudioPlayerFactory(), new AlertManagerFactory(),
-                        getAVSClientFactory(deviceConfig), DialogRequestIdAuthority.getInstance(),
-                        config.getWakeWordAgentEnabled(), new WakeWordIPCFactory(), this);
+        controller = new AVSController(this, new AVSAudioPlayerFactory(), new AlertManagerFactory(),
+                getAVSClientFactory(deviceConfig), DialogRequestIdAuthority.getInstance(),
+                config.getWakeWordAgentEnabled(), new WakeWordIPCFactory(), this);
 
         authSetup = new AuthSetup(config, this);
         authSetup.addAccessTokenListener(this);
@@ -215,8 +219,8 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
                         @Override
                         public void onRequestError(Throwable e) {
                             log.error("An error occured creating speech request", e);
-                            JOptionPane.showMessageDialog(getContentPane(), e.getMessage(),
-                                    "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(getContentPane(), e.getMessage(), "Error",
+                                    JOptionPane.ERROR_MESSAGE);
                             actionButton.doClick();
                             finishProcessing();
                         }
@@ -380,25 +384,47 @@ public class AVSApp extends JFrame implements ExpectSpeechListener, RecordingRMS
         String title = "Login to Register/Authenticate your Device";
         String regUrl =
                 deviceConfig.getCompanionServiceInfo().getServiceUrl() + "/provision/" + regCode;
-        int selected =
-                showYesNoDialog(
-                        "Please register your device by visiting the following URL in "
-                                + "a web browser and follow the instructions:\n"
-                                + regUrl
-                                + "\n\n Would you like to open the URL automatically in your default browser?",
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.BROWSE)) {
+            int selected = showYesNoDialog(
+                    "Please register your device by visiting the following URL in "
+                            + "a web browser and follow the instructions:\n" + regUrl
+                            + "\n\n Would you like to open the URL automatically in your default browser?",
+                    title);
+            if (selected == JOptionPane.YES_OPTION) {
+                try {
+                    Desktop.getDesktop().browse(new URI(regUrl));
+                } catch (Exception e) {
+                    // Ignore and proceed
+                }
+                title = "Click OK after Registering/Authenticating Device";
+                showDialog(
+                        "If a browser window did not open, please copy and paste the below URL into a "
+                                + "web browser, and follow the instructions:\n" + regUrl
+                                + "\n\n Click the OK button when finished.",
                         title);
-        if (selected == JOptionPane.YES_OPTION) {
-            try {
-                Desktop.getDesktop().browse(new URI(regUrl));
-            } catch (Exception e) {
-                // Ignore and proceed
+            } else {
+                handleAuthenticationCopyToClipboard(title, regUrl);
             }
-            title = "Click OK after Registering/Authenticating Device";
-            showDialog(
-                    "If a browser window did not open, please copy and paste the below URL into a "
-                            + "web browser, and follow the instructions:\n" + regUrl
-                            + "\n\n Click the OK button when finished.", title);
+        } else {
+            handleAuthenticationCopyToClipboard(title, regUrl);
         }
+    }
+
+    private void handleAuthenticationCopyToClipboard(String title, String regUrl) {
+        int selected =
+                showYesNoDialog("Please register your device by visiting the following URL in "
+                        + "a web browser and follow the instructions:\n" + regUrl
+                        + "\n\n Would you like the URL copied to your clipboard?", title);
+        if (selected == JOptionPane.YES_OPTION) {
+            copyToClipboard(regUrl);
+        }
+        showDialog("Click the OK button once you've authenticated with AVS", title);
+    }
+
+    private void copyToClipboard(String text) {
+        Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
+        Clipboard systemClipboard = defaultToolkit.getSystemClipboard();
+        systemClipboard.setContents(new StringSelection(text), null);
     }
 
     @Override
