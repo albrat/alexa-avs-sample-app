@@ -12,18 +12,6 @@
  */
 package com.amazon.alexa.avs;
 
-import com.amazon.alexa.avs.auth.AccessTokenListener;
-import com.amazon.alexa.avs.auth.AuthSetup;
-import com.amazon.alexa.avs.auth.companionservice.RegCodeDisplayHandler;
-import com.amazon.alexa.avs.config.DeviceConfig;
-import com.amazon.alexa.avs.config.DeviceConfigUtils;
-import com.amazon.alexa.avs.http.AVSClientFactory;
-import com.amazon.alexa.avs.wakeword.WakeWordDetectedHandler;
-import com.amazon.alexa.avs.wakeword.WakeWordIPCFactory;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Desktop;
@@ -40,10 +28,12 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Locale;
 import java.util.Properties;
 
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -52,6 +42,18 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.amazon.alexa.avs.auth.AccessTokenListener;
+import com.amazon.alexa.avs.auth.AuthSetup;
+import com.amazon.alexa.avs.auth.companionservice.RegCodeDisplayHandler;
+import com.amazon.alexa.avs.config.DeviceConfig;
+import com.amazon.alexa.avs.config.DeviceConfigUtils;
+import com.amazon.alexa.avs.http.AVSClientFactory;
+import com.amazon.alexa.avs.wakeword.WakeWordDetectedHandler;
+import com.amazon.alexa.avs.wakeword.WakeWordIPCFactory;
 
 @SuppressWarnings("serial")
 public class AVSApp extends JFrame
@@ -105,16 +107,19 @@ public class AVSApp extends JFrame
 
     private AVSApp(DeviceConfig config) throws Exception {
         deviceConfig = config;
-        controller = new AVSController(this, new AVSAudioPlayerFactory(), new AlertManagerFactory(),
-                getAVSClientFactory(deviceConfig), DialogRequestIdAuthority.getInstance(),
-                config.getWakeWordAgentEnabled(), new WakeWordIPCFactory(), this);
+
+        controller =
+                new AVSController(this, new AVSAudioPlayerFactory(), new AlertManagerFactory(),
+                        getAVSClientFactory(deviceConfig), DialogRequestIdAuthority.getInstance(),
+                        new WakeWordIPCFactory(), deviceConfig, this);
 
         authSetup = new AuthSetup(config, this);
         authSetup.addAccessTokenListener(this);
         authSetup.addAccessTokenListener(controller);
         authSetup.startProvisioningThread();
 
-        addDeviceField();
+        addTopPanel();
+        addLocaleSelector();
         addTokenField();
         addVisualizerField();
         addActionField();
@@ -123,7 +128,7 @@ public class AVSApp extends JFrame
         getContentPane().setLayout(new GridLayout(0, 1));
         setTitle(getAppTitle());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(400, 200);
+        setSize(400, 230);
         setVisible(true);
         controller.initializeStopCaptureHandler(this);
         controller.startHandlingDirectives();
@@ -155,21 +160,48 @@ public class AVSApp extends JFrame
         return new AVSClientFactory(config);
     }
 
-    private void addDeviceField() {
+    private void addTopPanel() {
+        FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
+        flowLayout.setHgap(0);
+        JPanel topPanel = new JPanel(flowLayout);
+        addDeviceField(topPanel);
+        getContentPane().add(topPanel);
+    }
+
+    private void addDeviceField(JPanel devicePanel) {
         JLabel productIdLabel = new JLabel(deviceConfig.getProductId());
         JLabel dsnLabel = new JLabel(deviceConfig.getDsn());
         productIdLabel.setFont(productIdLabel.getFont().deriveFont(Font.PLAIN));
         dsnLabel.setFont(dsnLabel.getFont().deriveFont(Font.PLAIN));
 
-        FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
-        flowLayout.setHgap(0);
-        JPanel devicePanel = new JPanel(flowLayout);
         devicePanel.add(new JLabel("Device: "));
         devicePanel.add(productIdLabel);
-        devicePanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        devicePanel.add(Box.createRigidArea(new Dimension(15, 0)));
         devicePanel.add(new JLabel("DSN: "));
         devicePanel.add(dsnLabel);
-        getContentPane().add(devicePanel);
+        devicePanel.add(Box.createRigidArea(new Dimension(15, 0)));
+    }
+
+    private void addLocaleSelector() {
+        JPanel localePanel = new JPanel();
+        FlowLayout layout = new FlowLayout(FlowLayout.LEFT, 0, 0);
+        localePanel.setLayout(layout);
+        JLabel localeLabel = new JLabel("Locale: ");
+        localePanel.add(localeLabel);
+        Object[] locales = DeviceConfig.SUPPORTED_LOCALES.toArray();
+        JComboBox<Object> localeSelector = new JComboBox<>(locales);
+        localeSelector.setSelectedItem(deviceConfig.getLocale());
+        localeSelector.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Locale locale = (Locale) localeSelector.getSelectedItem();
+                deviceConfig.setLocale(locale);
+                DeviceConfigUtils.updateConfigFile(deviceConfig);
+                controller.setLocale(locale);
+            }
+        });
+        localePanel.add(localeSelector);
+        getContentPane().add(localePanel);
     }
 
     private void addTokenField() {
@@ -213,6 +245,11 @@ public class AVSApp extends JFrame
 
                         @Override
                         public void onRequestSuccess() {
+                            // In case we get a response from the server without
+                            // terminating the stream ourselves.
+                            if (buttonState == ButtonState.STOP) {
+                                actionButton.doClick();
+                            }
                             finishProcessing();
                         }
 
@@ -332,7 +369,6 @@ public class AVSApp extends JFrame
         actionButton.setEnabled(true);
         visualizer.setIndeterminate(false);
         controller.processingFinished();
-
     }
 
     @Override

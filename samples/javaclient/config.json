@@ -3,6 +3,7 @@
     "dsn":"",
     "provisioningMethod":"",
     "wakeWordAgentEnabled":false,
+    "locale":"en-US",
     "companionApp":{
         "localPort":8443,
         "sslKeyStore":"",

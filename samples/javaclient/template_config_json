@@ -3,6 +3,7 @@
     "dsn":"${DeviceSerialNumber}",
     "provisioningMethod":"companionService",
     "wakeWordAgentEnabled":${Wake_Word_Detection_Enabled},
+    "locale":"${Locale}",
     "companionApp":{
         "localPort":8443,
         "sslKeyStore":"${Java_Client_Loc}/certs/server/jetty.pkcs12",

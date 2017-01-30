@@ -12,15 +12,18 @@
  */
 package com.amazon.alexa.avs.config;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Container that encapsulates all the information that exists in the config file.
@@ -28,6 +31,12 @@ import javax.json.JsonObjectBuilder;
 public class DeviceConfig {
     private static final String DEFAULT_HOST = "https://avs-alexa-na.amazon.com";
     public static final String FILE_NAME = "config.json";
+    public static final List<Locale> SUPPORTED_LOCALES = new ArrayList<>();
+    static {
+        SUPPORTED_LOCALES.add(Locale.US);
+        SUPPORTED_LOCALES.add(Locale.UK);
+        SUPPORTED_LOCALES.add(Locale.GERMANY);
+    }
 
     public static final String PRODUCT_ID = "productId";
     public static final String DSN = "dsn";
@@ -36,6 +45,7 @@ public class DeviceConfig {
     public static final String PROVISIONING_METHOD = "provisioningMethod";
     public static final String AVS_HOST = "avsHost";
     public static final String WAKE_WORD_AGENT_ENABLED = "wakeWordAgentEnabled";
+    public static final String LOCALE = "locale";
 
     /*
      * Required parameters from the config file.
@@ -43,7 +53,8 @@ public class DeviceConfig {
     private final String productId;
     private final String dsn;
     private final ProvisioningMethod provisioningMethod;
-    private final URL avsHost;
+    private URL avsHost;
+    private Locale locale;
 
     /*
      * Optional parameters from the config file.
@@ -90,6 +101,8 @@ public class DeviceConfig {
      *            {@value #COMPANION_SERVICE}
      * @param wakeWordAgentEnabled
      *            Whether the wake word agent functionality is enabled.
+     * @param languageTag
+     *            The language tag representing the locale to initialize the app with.
      * @param companionAppInfo
      *            The information necessary for the Companion App method of provisioning.
      * @param companionServiceInfo
@@ -98,7 +111,7 @@ public class DeviceConfig {
      *            (optional) AVS host override
      */
     public DeviceConfig(String productId, String dsn, String provisioningMethod,
-            boolean wakeWordAgentEnabled, CompanionAppInformation companionAppInfo,
+            boolean wakeWordAgentEnabled, String languageTag, CompanionAppInformation companionAppInfo,
             CompanionServiceInformation companionServiceInfo, String avsHost) {
 
         if (StringUtils.isBlank(productId)) {
@@ -107,6 +120,15 @@ public class DeviceConfig {
 
         if (StringUtils.isBlank(dsn)) {
             throw new MalformedConfigException(DSN + " is blank in your config file.");
+        }
+
+        if (StringUtils.isBlank(languageTag)) {
+            throw new MalformedConfigException(LOCALE + " is blank in your config file.");
+        }
+
+        Locale locale = Locale.forLanguageTag(languageTag);
+        if (!SUPPORTED_LOCALES.contains(locale)) {
+            throw new MalformedConfigException(LOCALE + ": " + locale + " is not a supported locale. Supported locales are: " + SUPPORTED_LOCALES);
         }
 
         ProvisioningMethod method;
@@ -132,6 +154,7 @@ public class DeviceConfig {
         this.provisioningMethod = method;
         this.productId = productId;
         this.dsn = dsn;
+        this.locale = locale;
         this.companionServiceInfo = companionServiceInfo;
         this.companionAppInfo = companionAppInfo;
         avsHost = StringUtils.isBlank(avsHost) ? DEFAULT_HOST : avsHost;
@@ -145,17 +168,29 @@ public class DeviceConfig {
     }
 
     public DeviceConfig(String productId, String dsn, String provisioningMethod,
-            boolean wakeWordAgentEnabled, CompanionAppInformation companionAppInfo,
+            boolean wakeWordAgentEnabled, String languageTag, CompanionAppInformation companionAppInfo,
             CompanionServiceInformation companionServiceInfo) {
-        this(productId, dsn, provisioningMethod, wakeWordAgentEnabled, companionAppInfo,
+        this(productId, dsn, provisioningMethod, wakeWordAgentEnabled, languageTag, companionAppInfo,
                 companionServiceInfo, DEFAULT_HOST);
     }
 
     /**
-     * @return avsHost.
+     * Get the Alexa Voice Service URL.
+     * 
+     * @return URL for making requests to Alexa Voice Service.
      */
     public URL getAvsHost() {
         return avsHost;
+    }
+
+    /**
+     * Set the Alexa Voice Service URL.
+     * 
+     * @param url
+     *            the base URL to be used for making requests to Alexa Voice Service.
+     */
+    public void setAvsHost(URL url) {
+        avsHost = url;
     }
 
     /**
@@ -191,6 +226,24 @@ public class DeviceConfig {
      */
     public boolean getWakeWordAgentEnabled() {
         return wakeWordAgentEnabled;
+    }
+
+    /**
+     * @return locale
+     */
+    public Locale getLocale() {
+        return locale;
+    }
+
+    /**
+     * Set the locale.
+     * @param locale
+     */
+    public void setLocale(Locale locale) {
+        if (!SUPPORTED_LOCALES.contains(locale)) {
+            throw new IllegalArgumentException("Locale " + locale + " is not supported. Supported locales are: " + SUPPORTED_LOCALES);
+        }
+        this.locale = locale;
     }
 
     /**
@@ -230,11 +283,12 @@ public class DeviceConfig {
 
         JsonObjectBuilder builder =
                 Json.createObjectBuilder()
-                        .add(PRODUCT_ID, productId)
-                        .add(DSN, dsn)
-                        .add(PROVISIONING_METHOD, provisioningMethod.toString())
-                        .add(WAKE_WORD_AGENT_ENABLED, wakeWordAgentEnabled)
-                        .add(AVS_HOST, avsHost.toString());
+                    .add(PRODUCT_ID, productId)
+                    .add(DSN, dsn)
+                    .add(PROVISIONING_METHOD, provisioningMethod.toString())
+                    .add(WAKE_WORD_AGENT_ENABLED, wakeWordAgentEnabled)
+                    .add(LOCALE, locale.toLanguageTag())
+                    .add(AVS_HOST, avsHost.toString());
 
         if (companionAppInfo != null) {
             builder.add(COMPANION_APP, companionAppInfo.toJson());
@@ -369,10 +423,10 @@ public class DeviceConfig {
         public JsonObject toJson() {
             JsonObjectBuilder builder =
                     Json.createObjectBuilder()
-                            .add(LOCAL_PORT, localPort)
-                            .add(LWA_URL, getLwaUrl().toString())
-                            .add(SSL_KEYSTORE, sslKeyStore)
-                            .add(SSL_KEYSTORE_PASSPHRASE, sslKeyStorePassphrase);
+                        .add(LOCAL_PORT, localPort)
+                        .add(LWA_URL, getLwaUrl().toString())
+                        .add(SSL_KEYSTORE, sslKeyStore)
+                        .add(SSL_KEYSTORE_PASSPHRASE, sslKeyStorePassphrase);
 
             if ((clientId != null) && (refreshToken != null)) {
                 builder.add(CLIENT_ID, clientId);
@@ -496,10 +550,10 @@ public class DeviceConfig {
         public JsonObject toJson() {
             JsonObjectBuilder builder =
                     Json.createObjectBuilder()
-                            .add(SERVICE_URL, getServiceUrl().toString())
-                            .add(SSL_CLIENT_KEYSTORE, sslClientKeyStore)
-                            .add(SSL_CLIENT_KEYSTORE_PASSPHRASE, sslClientKeyStorePassphrase)
-                            .add(SSL_CA_CERT, sslCaCert);
+                        .add(SERVICE_URL, getServiceUrl().toString())
+                        .add(SSL_CLIENT_KEYSTORE, sslClientKeyStore)
+                        .add(SSL_CLIENT_KEYSTORE_PASSPHRASE, sslClientKeyStorePassphrase)
+                        .add(SSL_CA_CERT, sslCaCert);
 
             if (sessionId != null) {
                 builder.add(SESSION_ID, sessionId);
