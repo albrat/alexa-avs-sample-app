@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -123,12 +124,14 @@ public class DeviceConfig {
         }
 
         if (StringUtils.isBlank(languageTag)) {
-            throw new MalformedConfigException(LOCALE + " is blank in your config file.");
+            throw new MalformedConfigException(LOCALE + " is blank in your config file. Supported locales are: "
+                    + SUPPORTED_LOCALES.stream().map(e -> e.toLanguageTag()).collect(Collectors.toList()));
         }
 
         Locale locale = Locale.forLanguageTag(languageTag);
         if (!SUPPORTED_LOCALES.contains(locale)) {
-            throw new MalformedConfigException(LOCALE + ": " + locale + " is not a supported locale. Supported locales are: " + SUPPORTED_LOCALES);
+            throw new MalformedConfigException(LOCALE + ": " + locale + " is not a supported locale. Supported locales are: "
+                    + SUPPORTED_LOCALES.stream().map(e -> e.toLanguageTag()).collect(Collectors.toList()));
         }
 
         ProvisioningMethod method;
