@@ -34,7 +34,7 @@ For information on how to update your client code, see [Preparing for Internatio
 
 ## Important considerations
 
-* Review the AVS [Terms & Agreements](https://developer.amazon.com/public/solutions/alexa/alexa-voice-service/support/terms-and-agreements)  
+* Review the AVS [Terms & Agreements](https://developer.amazon.com/public/solutions/alexa/alexa-voice-service/support/terms-and-agreements).  
 
 * The earcons associated with the sample project are for **prototyping purposes only**. For implementation and design guidance for commercial products, please see [Designing for AVS](https://developer.amazon.com/public/solutions/alexa/alexa-voice-service/content/designing-for-the-alexa-voice-service) and [AVS UX Guidelines](https://developer.amazon.com/public/solutions/alexa/alexa-voice-service/content/alexa-voice-service-ux-design-guidelines).
 
@@ -46,7 +46,7 @@ For information on how to update your client code, see [Preparing for Internatio
 
 ---
 
-## Get Started
+## Get started
 
 You can set up this project on the following platforms. Please choose the platform you'd like to set this up on -
 
@@ -58,7 +58,7 @@ You can set up this project on the following platforms. Please choose the platfo
 
 ---
 
-## How to Contribute  
+## Contribute 
 
 * Want to report a bug or request an update to the documentation? See [CONTRIBUTING.md](https://github.com/alexa/alexa-avs-sample-app/blob/master/CONTRIBUTING.md).  
 * Have questions or need help building the sample app? Open a [new issue](https://github.com/alexa/alexa-avs-sample-app/issues/new).
