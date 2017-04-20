@@ -12,8 +12,6 @@
  */
 package com.amazon.alexa.avs;
 
-import com.amazon.alexa.avs.AlertManager.ResultListener;
-
 import java.util.List;
 
 public interface AlertsDataStore {

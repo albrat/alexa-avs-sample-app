@@ -1,13 +1,13 @@
-/** 
+/**
  * Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
- * Licensed under the Amazon Software License (the "License"). You may not use this file 
+ * Licensed under the Amazon Software License (the "License"). You may not use this file
  * except in compliance with the License. A copy of the License is located at
  *
  *   http://aws.amazon.com/asl/
  *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the 
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
 package com.amazon.alexa.avs.auth;
@@ -37,7 +37,6 @@ public class AuthSetup implements AccessTokenListener {
     private static final Logger log = LoggerFactory.getLogger(AuthSetup.class);
 
     private final DeviceConfig deviceConfig;
-    private final RegCodeDisplayHandler regCodeDisplayHandler;
     private final Set<AccessTokenListener> accessTokenListeners = new HashSet<>();
 
     /**
@@ -45,12 +44,9 @@ public class AuthSetup implements AccessTokenListener {
      *
      * @param deviceConfig
      *            Information about this device.
-     * @param regCodeDisplayHandler
      */
-    public AuthSetup(final DeviceConfig deviceConfig,
-            final RegCodeDisplayHandler regCodeDisplayHandler) {
+    public AuthSetup(final DeviceConfig deviceConfig) {
         this.deviceConfig = deviceConfig;
-        this.regCodeDisplayHandler = regCodeDisplayHandler;
     }
 
     public void addAccessTokenListener(AccessTokenListener accessTokenListener) {
@@ -61,7 +57,7 @@ public class AuthSetup implements AccessTokenListener {
      * Initializes threads for the {@link CompanionAppProvisioningServer} and the
      * {@link CompanionServiceClient}, depending on which is selected by the user.
      */
-    public void startProvisioningThread() {
+    public void startProvisioningThread(RegCodeDisplayHandler regCodeDisplayHandler) {
         if (deviceConfig.getProvisioningMethod() == ProvisioningMethod.COMPANION_APP) {
             OAuth2ClientForPkce oAuthClient =
                     new OAuth2ClientForPkce(deviceConfig.getCompanionAppInfo().getLwaUrl());

@@ -12,7 +12,6 @@
  */
 package com.amazon.alexa.avs;
 
-import com.amazon.alexa.avs.AlertManager.ResultListener;
 import com.amazon.alexa.avs.config.ObjectMapperFactory;
 
 import org.apache.commons.io.IOUtils;

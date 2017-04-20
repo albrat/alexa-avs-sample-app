@@ -81,6 +81,7 @@ public class AVSAudioPlayer {
     // convert and limit volume values.
     private static final long VLCJ_VOLUME_SCALAR = 2;
     private static final int VLCJ_MIN_VOLUME = 0;
+    private static final int VLCJ_DEFAULT_VOLUME = 100;
     private static final int VLCJ_MAX_VOLUME = 200;
 
     // VLC's elapsed time doesn't work correctly. So we're using System.nanoTime() to get accurate
@@ -140,6 +141,9 @@ public class AVSAudioPlayer {
         setupAudioPlayer();
 
         currentVolume = audioPlayer.getMediaPlayer().getVolume();
+        if (currentVolume == VLCJ_MIN_VOLUME) {
+            currentVolume = VLCJ_DEFAULT_VOLUME;
+        }
         currentlyMuted = audioPlayer.getMediaPlayer().isMute();
 
         audioPlayerStateMachine = new AudioPlayerStateMachine(this, controller);

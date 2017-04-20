@@ -169,10 +169,4 @@ public class AlertManager implements AlertHandler {
         }
         return new AlertsStatePayload(all, active);
     }
-
-    interface ResultListener {
-        void onSuccess();
-
-        void onFailure();
-    }
 }
