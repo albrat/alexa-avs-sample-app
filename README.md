@@ -16,19 +16,30 @@ This project provides a step-by-step walkthrough to help you build a **hands-fre
 
 ## What's new?
 
-**January 30, 2017:**
+**April 20, 2017:**  
 
-The AVS java sample app has been updated with the following changes:
+*Updates*  
 
-1. Added support for the SetEndpoint directive.  
-[See sample code »](https://github.com/alexa/alexa-avs-sample-app/blob/master/samples/javaclient/src/main/java/com/amazon/alexa/avs/AVSController.java#L520)  
-[Read the docs »](https://developer.amazon.com/public/solutions/alexa/alexa-voice-service/reference/system#setendpoint)      
-2. Added support for the Settings Interface.  
-[See the code »](https://github.com/alexa/alexa-avs-sample-app/blob/master/samples/javaclient/src/main/java/com/amazon/alexa/avs/AVSController.java#L371)  
-[Read the docs »](https://developer.amazon.com/public/solutions/alexa/alexa-voice-service/reference/settings)      
-3. Added locale switcher (en-US, en-GB, de-DE) to sample app user interface.  
+* The companion service persists refresh tokens between restarts. This means you won't have to authenticate each time you bring up the sample app. Read about the update on the [Alexa Blog »](https://developer.amazon.com/blogs/alexa/post/bb4a34ad-f805-43d9-bbe0-c113105dd8fd/understanding-login-authentication-with-the-avs-sample-app-and-the-node-js-server).  
+* The **Listen** button has been replaced with a microphone icon.  
+* The sample app uses new Alexa wake word models from KITT.ai.  
 
-For information on how to update your client code, see [Preparing for Internationalization](https://developer.amazon.com/public/solutions/alexa/alexa-voice-service/reference/preparing-for-internationalization) on the Amazon Developer Portal.  
+*Maintenance*  
+
+* ALPN version has been updated in `POM.xml`.  
+* Automated install no longer requires user intervention to update certificates.  
+
+*Bug Fixes*  
+
+* The sample app ensures that the downchannel stream is established before sending the initial `SynchronizeState` event. This adheres to the guidance provided in [Managing an HTTP/2 Connection with AVS](https://developer.amazon.com/public/solutions/alexa/alexa-voice-service/docs/managing-an-http-2-connection).
+* Locale strings in the sample app user interface have been updated to match the values in `config.json`.  
+* Fixed no volume in Linux bug.  
+* **WiringPi** is now installed as part of `automated_install.sh`.  
+* Fixed 100% CPU bug.  
+
+*Known Issues*
+
+* To log out of the java sample app you must delete your `refresh_tokens` file in the `/samples/companionService` folder. Otherwise, the sample app will authenticate on each reboot. [Click here for log out instructions](Sample-App-Log-Out-Instructions).
 
 ---
 
