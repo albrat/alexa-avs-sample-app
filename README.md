@@ -16,6 +16,12 @@ This project provides a step-by-step walkthrough to help you build a **hands-fre
 
 ## What's new?
 
+**April 27, 2017:**
+
+*Updates* 
+
+* Need help troubleshooting the AVS Sample App? Check out the new [Troubleshooting Guide](#troubleshooting).
+
 **April 20, 2017:**  
 
 *Updates*  
