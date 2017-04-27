@@ -20,7 +20,7 @@ This project provides a step-by-step walkthrough to help you build a **hands-fre
 
 *Updates* 
 
-* Need help troubleshooting the AVS Sample App? Check out the new [Troubleshooting Guide](#troubleshooting).
+* Need help troubleshooting the AVS Sample App? Check out the new [Troubleshooting Guide](https://github.com/alexa/alexa-avs-sample-app/wiki/Troubleshooting).
 
 **April 20, 2017:**  
 
