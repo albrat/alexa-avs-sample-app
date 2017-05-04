@@ -67,7 +67,7 @@ Or you can prototype with these third-party dev kits -
 
 *Known Issues*
 
-* To log out of the java sample app you must delete your `refresh_tokens` file in the `/samples/companionService` folder. Otherwise, the sample app will authenticate on each reboot. [Click here for log out instructions](Sample-App-Log-Out-Instructions).
+* To log out of the java sample app you must delete your `refresh_tokens` file in the `/samples/companionService` folder. Otherwise, the sample app will authenticate on each reboot. [Click here for log out instructions](../../wiki/Sample-App-Log-Out-Instructions).
 
 ---
 
