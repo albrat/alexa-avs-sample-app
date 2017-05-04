@@ -12,9 +12,31 @@ This project provides a step-by-step walkthrough to help you build a **hands-fre
 
 [Alexa Voice Service](https://developer.amazon.com/avs) (AVS) is Amazon’s intelligent voice recognition and natural language understanding service that allows you as a developer to voice-enable any connected device that has a microphone and speaker.
 
+--- 
+
+## Get started
+
+You can set up this project on the following platforms -
+
+* [Raspberry Pi](../wiki/Raspberry-Pi), or
+* [Linux](../wiki/Linux), or
+* [Mac](../wiki/Mac), or
+* [Windows](../wiki/Windows)  
+
+Or you can prototype with these third-party dev kits -
+
+* *New!* [Raspberry Pi + Conexant 4-mic Development Kit for Amazon AVS](https://github.com/conexant/alexa-avs-sample-app/wiki/Conexant4Mic-Raspberry-Pi)
+* [Raspberry Pi + Conexant 2-Mic Development Kit for Amazon AVS](../wiki/Conexant2Mic-Raspberry-Pi)  
+
 ---
 
-## What's new?
+## What's new?  
+
+**May 4, 2017:**  
+
+*Updates*
+
+* The Conexant 4-mic Development Kit for Amazon AVS is now available, making it easier and more cost-effective to build far-field products with Amazon Alexa. [Learn more »](http://developer.amazon.com/alexa-voice-service/dev-kits/conexant-4-mic/)  
 
 **April 27, 2017:**
 
@@ -60,18 +82,6 @@ This project provides a step-by-step walkthrough to help you build a **hands-fre
   * [Contact KITT.AI](mailto:snowboy@kitt.ai) for information on SnowBoy licensing.
 
 * **IMPORTANT**: The Sensory wake word engine included with this project is time-limited: code linked against it will stop working when the library expires. The library included in this repository will, at all times, have an expiration date that is at least **120 days** in the future. See Sensory's [GitHub](https://github.com/Sensory/alexa-rpi#license) page for more information on how to renew the license for non-commercial use.
-
----
-
-## Get started
-
-You can set up this project on the following platforms. Please choose the platform you'd like to set this up on -
-
-* [Raspberry Pi](../../wiki/Raspberry-Pi), or
-* [Linux](../../wiki/Linux), or
-* [Mac](../../wiki/Mac), or
-* [Windows](../../wiki/Windows)
-* *New!* [Raspberry Pi + Conexant 2-Mic Development Kit for Amazon AVS](../../wiki/Conexant2Mic-Raspberry-Pi)
 
 ---
 
