@@ -25,7 +25,8 @@ You can set up this project on the following platforms -
 
 Or you can prototype with these third-party dev kits -
 
-* *New!* [Raspberry Pi + Conexant 4-mic Development Kit for Amazon AVS](https://github.com/conexant/alexa-avs-sample-app/wiki/Conexant4Mic-Raspberry-Pi)
+* *New!* [Raspberry Pi + Microsemi AcuEdge Development Kit for Amazon AVS](https://github.com/MicrosemiVoiceProcessing/ZLK38AVS/wiki/howto)    
+* [Raspberry Pi + Conexant 4-mic Development Kit for Amazon AVS](https://github.com/conexant/alexa-avs-sample-app/wiki/Conexant4Mic-Raspberry-Pi)
 * [Raspberry Pi + Conexant 2-Mic Development Kit for Amazon AVS](../../wiki/Conexant2Mic-Raspberry-Pi)  
 
 ---
