@@ -31,6 +31,12 @@ Or you can prototype with these third-party dev kits -
 
 ## What's new?  
 
+**May 31, 2017:**
+
+*Updates*  
+
+* The Raspberry Pi + Microsemi AcuEdge Development Kit for Amazon AVS is now available for purchase. [Learn more »](https://developer.amazon.com/alexa-voice-service/dev-kits/microsemi-acuedge/)  
+
 **May 4, 2017:**  
 
 *Updates*
