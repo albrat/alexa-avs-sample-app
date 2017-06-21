@@ -31,6 +31,17 @@ Or you can prototype with these third-party dev kits -
 
 ## What's new?  
 
+**June 21, 2017:**  
+
+*Updates*
+
+* The sample app now supports Display Cards.  
+  * `TemplateRuntime` directives will be displayed in the sample app as JSON.   
+  * To enable Display Cards:  
+    * Login to the [Amazon Developer Portal](https://developer.amazon.com/login.html) and navigate to your product: **Alexa > AVS**.
+    * Click **Edit**, then click **Device Capabilities**.  
+    * Select **Display Cards**, then select **Display Cards with Media**.  
+
 **May 31, 2017:**
 
 *Updates*  
