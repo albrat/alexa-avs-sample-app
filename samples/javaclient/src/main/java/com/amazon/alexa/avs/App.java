@@ -18,6 +18,7 @@ import com.amazon.alexa.avs.config.DeviceConfig;
 import com.amazon.alexa.avs.config.DeviceConfigUtils;
 import com.amazon.alexa.avs.http.AVSClientFactory;
 import com.amazon.alexa.avs.ui.BearerTokenView;
+import com.amazon.alexa.avs.ui.CardView;
 import com.amazon.alexa.avs.ui.DeviceNameView;
 import com.amazon.alexa.avs.ui.DialogFactory;
 import com.amazon.alexa.avs.ui.ListenView;
@@ -34,11 +35,10 @@ public class App {
     private AVSController controller;
     private AuthSetup authSetup;
     private BearerTokenView bearerTokenView;
-    private DeviceNameView deviceNameView;
-    private LocaleView localeView;
     private UserSpeechVisualizerView visualizerView;
     private ListenView listenView;
     private PlaybackControlsView playbackControlsView;
+    private CardView cardView;
     private MainWindow mainWindow;
 
     public static void main(String[] args) throws Exception {
@@ -82,26 +82,33 @@ public class App {
 
     private void createViews(DeviceConfig config) {
         bearerTokenView = new BearerTokenView(authSetup, controller);
-        deviceNameView = new DeviceNameView(config.getProductId(), config.getDsn());
-        localeView = new LocaleView(config, controller);
+        DeviceNameView deviceNameView = new DeviceNameView(config.getProductId(), config.getDsn());
+        LocaleView localeView = new LocaleView(config, controller);
         visualizerView = new UserSpeechVisualizerView();
         listenView = new ListenView(visualizerView, controller);
         playbackControlsView = new PlaybackControlsView(visualizerView, controller);
+        cardView = new CardView();
 
-        mainWindow = new MainWindow(deviceNameView, localeView, bearerTokenView,
-                visualizerView, listenView, playbackControlsView);
+        mainWindow =
+                new MainWindow(deviceNameView, localeView, bearerTokenView, visualizerView, listenView,
+                        playbackControlsView, cardView);
     }
 
     private void addListeners() {
         listenView.addSpeechStateChangeListener(visualizerView);
         listenView.addSpeechStateChangeListener(playbackControlsView);
+        listenView.addSpeechStateChangeListener(cardView);
         authSetup.addAccessTokenListener(bearerTokenView);
         authSetup.addAccessTokenListener(controller);
     }
 
     private void start() {
-        controller.init(listenView);
+        controller.init(listenView, cardView);
         controller.startHandlingDirectives();
         SwingUtilities.invokeLater(() -> mainWindow.setVisible(true));
+    }
+
+    public AVSController getController() {
+        return controller;
     }
 }

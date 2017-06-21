@@ -30,14 +30,14 @@ public class MainWindow extends JFrame {
     private static final Logger log = LoggerFactory.getLogger(MainWindow.class);
 
     private static final int APP_WIDTH = 570;
-    private static final int APP_HEIGHT = 300;
+    private static final int APP_HEIGHT = 620;
     private static final String APP_TITLE = "Alexa Voice Service";
     private static final String VERSION_PROPERTIES_FILE = "/res/version.properties";
     private static final String VERSION_KEY = "version";
 
     public MainWindow(DeviceNameView deviceNameView, LocaleView localeView,
-            BearerTokenView bearerTokenView, UserSpeechVisualizerView userSpeechVisualizerView,
-            ListenView listenView, PlaybackControlsView playbackControlsView) {
+            BearerTokenView bearerTokenView, UserSpeechVisualizerView userSpeechVisualizerView, ListenView listenView,
+            PlaybackControlsView playbackControlsView, CardView cardView) {
         super();
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         getRootPane().setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -48,6 +48,7 @@ public class MainWindow extends JFrame {
         getContentPane().add(userSpeechVisualizerView);
         getContentPane().add(listenView);
         getContentPane().add(playbackControlsView);
+        getContentPane().add(cardView);
 
         setTitle(getAppTitle());
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -77,8 +78,7 @@ public class MainWindow extends JFrame {
     }
 
     private void addTopPanel(DeviceNameView deviceNameView) {
-        FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
-        flowLayout.setHgap(0);
+        FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT, 0, 0);
         JPanel topPanel = new JPanel(flowLayout);
         topPanel.add(deviceNameView);
         getContentPane().add(topPanel);

@@ -113,7 +113,7 @@ public class AVSClient implements ConnectionListener {
     private ResultListener resultListener;
 
     /**
-     * Constructor that takes a host, a {@link DirectiveQueue}, and a {@link SslContextFactory} .
+     * Constructor that takes a host, a {@link MultipartParserConsumer}, and a {@link SslContextFactory} .
      * The provided {@link SslContextFactory} may allow bypassing server certificates, or handling
      * TLS/SSL in different ways.
      *
@@ -223,7 +223,7 @@ public class AVSClient implements ConnectionListener {
     /**
      * Execute a request.
      *
-     * @param request
+     * @param avsRequest
      */
     private void doRequest(AVSRequest avsRequest) {
 
@@ -263,7 +263,7 @@ public class AVSClient implements ConnectionListener {
      *             is thrown when we get a non-2xx HTTP status code.
      * @throws IOException
      *             is thrown when parsing the multipart stream, and reading from the
-     *             {@link PipedChannelResponseListener}.
+     *             {@link InputStreamResponseListener}.
      */
     private void doRequestActual(Request request, Optional<RequestListener> requestListener,
             MultipartParser multipartParser) throws AVSException, IOException {
@@ -415,7 +415,7 @@ public class AVSClient implements ConnectionListener {
 
     /**
      * Get the Alexa Voice Service URL.
-     * 
+     *
      * @return URL the client is using for requests to Alexa Voice Service.
      */
     public URL getHost() {
@@ -462,7 +462,7 @@ public class AVSClient implements ConnectionListener {
      * @param accessToken
      */
     public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+        AVSClient.accessToken = accessToken;
         startRequestThread();
         startDownchannelThread();
     }
@@ -579,7 +579,7 @@ public class AVSClient implements ConnectionListener {
         }
     }
 
-    private static class RequestException extends RuntimeException {
+    static class RequestException extends RuntimeException {
         private static final long serialVersionUID = 1L;
 
         public RequestException(Throwable cause) {

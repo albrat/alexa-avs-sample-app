@@ -1,13 +1,13 @@
 /**
  * Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
- * Licensed under the Amazon Software License (the "License"). You may not use this file 
+ * Licensed under the Amazon Software License (the "License"). You may not use this file
  * except in compliance with the License. A copy of the License is located at
  *
  * http://aws.amazon.com/asl/
  *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the 
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
 package com.amazon.alexa.avs;
@@ -35,6 +35,8 @@ import com.amazon.alexa.avs.message.response.speaker.SetMute;
 import com.amazon.alexa.avs.message.response.speaker.VolumePayload;
 import com.amazon.alexa.avs.message.response.speechsynthesizer.Speak;
 import com.amazon.alexa.avs.message.response.system.SetEndpoint;
+import com.amazon.alexa.avs.message.response.templateruntime.CardHandler;
+import com.amazon.alexa.avs.message.response.templateruntime.RenderTemplate;
 import com.amazon.alexa.avs.wakeword.WakeWordDetectedHandler;
 import com.amazon.alexa.avs.wakeword.WakeWordIPC;
 import com.amazon.alexa.avs.wakeword.WakeWordIPC.IPCCommand;
@@ -70,6 +72,9 @@ public class AVSController implements RecordingStateListener, AlertHandler, Aler
         UserActivityListener, WakeWordDetectedHandler {
 
     private AudioCapture microphone;
+
+    private AudioCapture audioFileCapture;
+
     private AVSClient avsClient;
 
     private final DialogRequestIdAuthority dialogRequestIdAuthority;
@@ -111,6 +116,7 @@ public class AVSController implements RecordingStateListener, AlertHandler, Aler
     private final AVSClientFactory avsClientFactory;
     private final DirectiveEnqueuer directiveEnqueuer;
     private final DeviceConfig config;
+    private CardHandler cardHandler;
     private ResultListener listener;
 
     AVSController(AVSAudioPlayerFactory audioFactory, AlertManagerFactory alarmFactory,
@@ -158,11 +164,15 @@ public class AVSController implements RecordingStateListener, AlertHandler, Aler
             private void sendSyncAndLocale() {
                 // Send synchronize state and set location once the file operations have finished.
                 if (loadBeforeSync.getCount() <= 0) {
-                    log.info("Start sending SynchronizeStateEvent");
-                    sendSynchronizeStateEvent();
-                    if (!setLocaleCalled) {
-                        setLocale(config.getLocale());
-                        setLocaleCalled = true;
+                    try {
+                        log.info("Start sending SynchronizeStateEvent");
+                        sendSynchronizeStateEvent();
+                        if (!setLocaleCalled) {
+                            setLocale(config.getLocale());
+                            setLocaleCalled = true;
+                        }
+                    } catch (InterruptedException e) {
+                        log.error("Could not send SynchronizeState event", e);
                     }
                 }
             }
@@ -178,8 +188,8 @@ public class AVSController implements RecordingStateListener, AlertHandler, Aler
 
         independentQueue = new LinkedBlockingDeque<>();
 
-        directiveEnqueuer =
-                new DirectiveEnqueuer(dialogRequestIdAuthority, dependentQueue, independentQueue);
+        directiveEnqueuer = new DirectiveEnqueuer(dialogRequestIdAuthority, dependentQueue,
+                independentQueue, this);
 
         avsClient = avsClientFactory.getAVSClient(directiveEnqueuer, this, listener);
 
@@ -206,12 +216,13 @@ public class AVSController implements RecordingStateListener, AlertHandler, Aler
                 TimeUnit.HOURS);
     }
 
-    public void init(ListenHandler listenHandler) {
+    public void init(ListenHandler listenHandler, CardHandler cardHandler) {
         // Initialize all GUI-related handlers
         this.stopCaptureHandler = listenHandler;
         this.expectSpeechListeners = new HashSet<>(
                 Arrays.asList(listenHandler, speechRequestAudioPlayerPauseController));
         this.wakeWordDetectedHandler = listenHandler;
+        this.cardHandler = cardHandler;
 
         alertManager.loadFromDisk(listener);
     }
@@ -264,7 +275,7 @@ public class AVSController implements RecordingStateListener, AlertHandler, Aler
         independentDirectiveThread.start();
     }
 
-    public void sendSynchronizeStateEvent() {
+    public void sendSynchronizeStateEvent() throws InterruptedException {
         sendRequest(RequestFactory.createSystemSynchronizeStateEvent(player.getPlaybackState(),
                 player.getSpeechState(), alertManager.getState(), player.getVolumeState()));
     }
@@ -297,8 +308,12 @@ public class AVSController implements RecordingStateListener, AlertHandler, Aler
                     player.getSpeechState(), alertManager.getState(), player.getVolumeState());
 
             dependentQueue.clear();
-
-            InputStream inputStream = getMicrophoneInputStream(this, rmsListener);
+            InputStream inputStream;
+            if (audioFileCapture != null) {
+                inputStream = audioFileCapture.getAudioInputStream(this, rmsListener);
+            } else {
+                inputStream = getMicrophoneInputStream(this, rmsListener);
+            }
 
             avsClient.sendEvent(body, inputStream, requestListener, AUDIO_TYPE);
 
@@ -385,6 +400,9 @@ public class AVSController implements RecordingStateListener, AlertHandler, Aler
     /**
      * Set this device account's locale to the given locale by
      * sending a SettingsUpdated event to AlexaService.
+     * Set this device account's locale to the given locale by sending a SettingsUpdated event to
+     * AlexaService.
+     *
      * @param locale
      */
     public void setLocale(Locale locale) {
@@ -419,6 +437,8 @@ public class AVSController implements RecordingStateListener, AlertHandler, Aler
                 handleSpeakerDirective(directive);
             } else if (AVSAPIConstants.System.NAMESPACE.equals(directiveNamespace)) {
                 handleSystemDirective(directive);
+            } else if (AVSAPIConstants.TemplateRuntime.NAMESPACE.equals(directiveNamespace)) {
+                handleTemplateRuntimeDirective(directive);
             } else {
                 throw new DirectiveHandlingException(ExceptionType.UNSUPPORTED_OPERATION,
                         "No device side component to handle the directive.");
@@ -476,11 +496,10 @@ public class AVSController implements RecordingStateListener, AlertHandler, Aler
         }
     }
 
-
-    private void handleSpeechRecognizerDirective(Directive directive) throws DirectiveHandlingException {
+    private void handleSpeechRecognizerDirective(Directive directive)
+            throws DirectiveHandlingException {
         String directiveName = directive.getName();
         if (AVSAPIConstants.SpeechRecognizer.Directives.ExpectSpeech.NAME.equals(directiveName)) {
-
             // If your device cannot handle automatically starting to listen, you must
             // implement a listen timeout event, as described here:
             // https://developer.amazon.com/public/solutions/alexa/alexa-voice-service/rest/speechrecognizer-listentimeout-request
@@ -533,6 +552,22 @@ public class AVSController implements RecordingStateListener, AlertHandler, Aler
         } else {
             throw new DirectiveHandlingException(ExceptionType.UNSUPPORTED_OPERATION,
                     "The device's speaker component cannot handle this directive.");
+        }
+    }
+
+    private void handleTemplateRuntimeDirective(Directive directive)
+            throws DirectiveHandlingException {
+        String directiveName = directive.getName();
+        if (AVSAPIConstants.TemplateRuntime.Directives.RenderTemplate.NAME.equals(directiveName)) {
+            cardHandler.renderCard((RenderTemplate) directive.getPayload(),
+                    directive.getRawMessage());
+        } else if (AVSAPIConstants.TemplateRuntime.Directives.RenderPlayerInfo.NAME
+                .equals(directiveName)) {
+            cardHandler.renderPlayerInfo(directive.getRawMessage());
+        } else {
+            throw new DirectiveHandlingException(ExceptionType.UNSUPPORTED_OPERATION,
+                    String.format("The device's %s component cannot handle the %s directive",
+                            directive.getNamespace(), directive.getName()));
         }
     }
 
@@ -693,5 +728,9 @@ public class AVSController implements RecordingStateListener, AlertHandler, Aler
         if (acceptWakeWordEvents) {
             wakeWordDetectedHandler.onWakeWordDetected();
         }
+    }
+
+    public void setAudioFileCapture(AudioCapture audioFileCapture) {
+        this.audioFileCapture = audioFileCapture;
     }
 }

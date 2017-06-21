@@ -12,13 +12,13 @@
  */
 package com.amazon.alexa.avs.ui;
 
+import com.amazon.alexa.avs.RecordingRMSListener;
+
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
-import com.amazon.alexa.avs.RecordingRMSListener;
-
-public class UserSpeechVisualizerView extends JProgressBar
-        implements SpeechStateChangeListener, RecordingRMSListener {
+public class UserSpeechVisualizerView extends JProgressBar implements SpeechStateChangeListener,
+        RecordingRMSListener {
 
     public UserSpeechVisualizerView() {
         super(0, 100);

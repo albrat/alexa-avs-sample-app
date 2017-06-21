@@ -12,16 +12,16 @@
  */
 package com.amazon.alexa.avs.ui;
 
+import com.amazon.alexa.avs.AVSController;
+import com.amazon.alexa.avs.config.DeviceConfig;
+import com.amazon.alexa.avs.config.DeviceConfigUtils;
+
 import java.awt.FlowLayout;
 import java.util.Locale;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import com.amazon.alexa.avs.AVSController;
-import com.amazon.alexa.avs.config.DeviceConfig;
-import com.amazon.alexa.avs.config.DeviceConfigUtils;
 
 public class LocaleView extends JPanel {
 

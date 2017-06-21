@@ -12,6 +12,9 @@
  */
 package com.amazon.alexa.avs.ui;
 
+import com.amazon.alexa.avs.AVSController;
+import com.amazon.alexa.avs.PlaybackAction;
+
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridLayout;
@@ -20,9 +23,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-
-import com.amazon.alexa.avs.AVSController;
-import com.amazon.alexa.avs.PlaybackAction;
 
 public class PlaybackControlsView extends JPanel implements SpeechStateChangeListener {
 
@@ -96,9 +96,9 @@ public class PlaybackControlsView extends JPanel implements SpeechStateChangeLis
      * Recursively Enable/Disable components in a container
      *
      * @param container
-     *         Object of type Container (like JPanel).
+     *            Object of type Container (like JPanel).
      * @param enable
-     *         Set true to enable all components in the container. Set to false to disable all.
+     *            Set true to enable all components in the container. Set to false to disable all.
      */
     private void setComponentsOfContainerEnabled(Container container, boolean enable) {
         for (Component component : container.getComponents()) {

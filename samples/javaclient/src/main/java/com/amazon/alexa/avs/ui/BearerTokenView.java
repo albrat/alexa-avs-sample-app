@@ -12,16 +12,16 @@
  */
 package com.amazon.alexa.avs.ui;
 
+import com.amazon.alexa.avs.AVSController;
+import com.amazon.alexa.avs.auth.AccessTokenListener;
+import com.amazon.alexa.avs.auth.AuthSetup;
+
 import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-
-import com.amazon.alexa.avs.AVSController;
-import com.amazon.alexa.avs.auth.AccessTokenListener;
-import com.amazon.alexa.avs.auth.AuthSetup;
 
 public class BearerTokenView extends JPanel implements AccessTokenListener {
 
