@@ -10,7 +10,7 @@ This project provides a step-by-step walkthrough to help you build a **hands-fre
 
 [Alexa Voice Service](https://developer.amazon.com/avs) (AVS) is Amazon’s intelligent voice recognition and natural language understanding service that allows you as a developer to voice-enable any connected device that has a microphone and speaker.
 
---- 
+---
 
 ## Get started
 
@@ -30,6 +30,14 @@ Or you can prototype with these third-party dev kits -
 ---
 
 ## What's new?  
+
+**July 6, 2017:**
+
+*Updates*
+
+* The sample app has been updated to support Notifications.
+  * Enable the Quote Maker skill, located in the Alexa Skills Store to test Notifications with the AVS Sample App.
+* Added a login/logout button.
 
 **June 21, 2017:**  
 
@@ -56,7 +64,7 @@ Or you can prototype with these third-party dev kits -
 
 **April 27, 2017:**
 
-*Updates* 
+*Updates*
 
 * Need help troubleshooting the AVS Sample App? Check out the new [Troubleshooting Guide](https://github.com/alexa/alexa-avs-sample-app/wiki/Troubleshooting).
 
@@ -101,9 +109,8 @@ Or you can prototype with these third-party dev kits -
 
 ---
 
-## Contribute 
+## Contribute
 
 * Want to report a bug or request an update to the documentation? See [CONTRIBUTING.md](https://github.com/alexa/alexa-avs-sample-app/blob/master/CONTRIBUTING.md).
 * Having trouble? Check out our [troubleshooting guide](../../wiki/Troubleshooting).
 * Have questions or need help building the sample app? Open a [new issue](https://github.com/alexa/alexa-avs-sample-app/issues/new).
-
