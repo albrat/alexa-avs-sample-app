@@ -36,7 +36,7 @@ Or you can prototype with these third-party dev kits -
 *Updates*
 
 * The sample app has been updated to support Notifications.
-  * Enable the Quote Maker skill, located in the Alexa Skills Store to test Notifications with the AVS Sample App.
+  * Enable the [Quote Maker](https://www.amazon.com/dp/B071ZMZWF7/ref=sr_1_1?s=digital-skills&ie=UTF8&qid=1499374636&sr=1-1&keywords=quote+maker) skill, located in the Alexa Skills Store to test Notifications with the AVS Sample App.
 * Added a login/logout button.
 
 **June 21, 2017:**  
