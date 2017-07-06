@@ -10,12 +10,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.amazon.alexa.avs.ui;
+package com.amazon.alexa.avs.ui.graphical;
 
 import java.awt.FlowLayout;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -23,27 +20,29 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.amazon.alexa.avs.ui.MainUIHandler;
+import com.amazon.alexa.avs.ui.controllers.MainViewController;
 
-public class MainWindow extends JFrame {
-    private static final Logger log = LoggerFactory.getLogger(MainWindow.class);
+public class GraphicalMainView extends JFrame implements MainUIHandler {
 
     private static final int APP_WIDTH = 570;
     private static final int APP_HEIGHT = 620;
-    private static final String APP_TITLE = "Alexa Voice Service";
-    private static final String VERSION_PROPERTIES_FILE = "/res/version.properties";
-    private static final String VERSION_KEY = "version";
 
-    public MainWindow(DeviceNameView deviceNameView, LocaleView localeView,
-            BearerTokenView bearerTokenView, UserSpeechVisualizerView userSpeechVisualizerView, ListenView listenView,
-            PlaybackControlsView playbackControlsView, CardView cardView) {
+    private MainViewController mainViewController;
+
+    GraphicalMainView(GraphicalDeviceNameView deviceNameView, GraphicalLocaleView localeView,
+            GraphicalAccessTokenView bearerTokenView, GraphicalNotificationsView notificationsView,
+            GraphicalUserSpeechVisualizerView userSpeechVisualizerView,
+            GraphicalListenView listenView, GraphicalPlaybackControlsView playbackControlsView,
+            GraphicalCardView cardView, GraphicalLoginLogoutView loginLogoutView) {
         super();
+        mainViewController = new MainViewController();
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         getRootPane().setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        addTopPanel(deviceNameView);
+        addTopPanel(deviceNameView, notificationsView);
         getContentPane().add(localeView);
+        getContentPane().add(loginLogoutView);
         getContentPane().add(bearerTokenView);
         getContentPane().add(userSpeechVisualizerView);
         getContentPane().add(listenView);
@@ -55,32 +54,17 @@ public class MainWindow extends JFrame {
         setSize(APP_WIDTH, APP_HEIGHT);
     }
 
-    private String getAppTitle() {
-        String version = getAppVersion();
-        String title = APP_TITLE;
-        if (version != null) {
-            title += " - v" + version;
-        }
-        return title;
+    @Override
+    public String getAppTitle() {
+        return mainViewController.getAppTitle();
     }
 
-    private String getAppVersion() {
-        final Properties properties = new Properties();
-        try (final InputStream stream = getClass().getResourceAsStream(VERSION_PROPERTIES_FILE)) {
-            properties.load(stream);
-            if (properties.containsKey(VERSION_KEY)) {
-                return properties.getProperty(VERSION_KEY);
-            }
-        } catch (IOException e) {
-            log.warn("version.properties file not found on classpath");
-        }
-        return null;
-    }
-
-    private void addTopPanel(DeviceNameView deviceNameView) {
+    private void addTopPanel(GraphicalDeviceNameView deviceNameView,
+            GraphicalNotificationsView notificationsView) {
         FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT, 0, 0);
         JPanel topPanel = new JPanel(flowLayout);
         topPanel.add(deviceNameView);
+        topPanel.add(notificationsView);
         getContentPane().add(topPanel);
     }
 }

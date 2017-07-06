@@ -315,4 +315,26 @@ public final class AVSAPIConstants {
             }
         }
     }
+
+    public static final class Notifications {
+        public static final String NAMESPACE = Notifications.class.getSimpleName();
+
+        public static final class Events {
+
+            public static final class IndicatorState {
+                public static final String NAME = IndicatorState.class.getSimpleName();
+            }
+        }
+
+        public static final class Directives {
+
+            public static final class SetIndicator {
+                public static final String NAME = SetIndicator.class.getSimpleName();
+            }
+
+            public static final class ClearIndicator {
+                public static final String NAME = ClearIndicator.class.getSimpleName();
+            }
+        }
+    }
 }

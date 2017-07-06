@@ -17,6 +17,7 @@ import com.amazon.alexa.avs.message.Header;
 import com.amazon.alexa.avs.message.Payload;
 import com.amazon.alexa.avs.message.request.context.AlertsStatePayload;
 import com.amazon.alexa.avs.message.request.context.ComponentState;
+import com.amazon.alexa.avs.message.request.context.NotificationsStatePayload;
 import com.amazon.alexa.avs.message.request.context.PlaybackStatePayload;
 import com.amazon.alexa.avs.message.request.context.SpeechStatePayload;
 import com.amazon.alexa.avs.message.request.context.VolumeStatePayload;
@@ -43,6 +44,14 @@ public class ComponentStateFactory {
                 AVSAPIConstants.Speaker.Events.VolumeState.NAME), volumeState);
     }
 
+    public static ComponentState createNotificationsState(
+            NotificationsStatePayload notificationsState) {
+        return new ComponentState(
+                new Header(AVSAPIConstants.Notifications.NAMESPACE,
+                        AVSAPIConstants.Notifications.Events.IndicatorState.NAME),
+                notificationsState);
+    }
+
     public static ComponentState createComponentState(Payload payload) {
         ComponentState component;
         if (payload instanceof PlaybackStatePayload) {
@@ -53,6 +62,9 @@ public class ComponentStateFactory {
             component = ComponentStateFactory.createAlertState((AlertsStatePayload) payload);
         } else if (payload instanceof VolumeStatePayload) {
             component = ComponentStateFactory.createVolumeState((VolumeStatePayload) payload);
+        } else if (payload instanceof NotificationsStatePayload) {
+            component = ComponentStateFactory
+                    .createNotificationsState((NotificationsStatePayload) payload);
         } else {
             throw new IllegalArgumentException("Unknown payload type");
         }

@@ -10,16 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.amazon.alexa.avs.ui;
-
-import com.amazon.alexa.avs.message.response.templateruntime.RenderTemplate;
-import com.amazon.alexa.avs.message.response.templateruntime.Title;
-
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.amazon.alexa.avs.ui.graphical;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -34,10 +25,27 @@ import javax.swing.JTextArea;
 import javax.swing.Scrollable;
 import javax.swing.border.EmptyBorder;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.amazon.alexa.avs.message.response.templateruntime.RenderTemplate;
+import com.amazon.alexa.avs.message.response.templateruntime.Title;
+
 public class CardPanel extends JPanel implements Scrollable {
     private static final Logger log = LoggerFactory.getLogger(CardPanel.class);
     private static final String BODY_TEMPLATE_1 = "bodyTemplate1";
     private Font defaultFont;
+
+    private static final int SCROLLABLE_INCREMENT = 16;
+    private static final float FONT_SCALE = 1.2f;
+    private static final int BORDER_TOP = 10;
+    private static final int BORDER_LEFT = 20;
+    private static final int BORDER_BOTTOM = 10;
+    private static final int BORDER_RIGHT = 20;
+    private static final int TITLE_BOTTOM_PADDING = 15;
 
     /**
      * Generated Serial Version UID.
@@ -46,7 +54,7 @@ public class CardPanel extends JPanel implements Scrollable {
 
     public CardPanel() {
         defaultFont = getFont();
-        setBorder(new EmptyBorder(10, 20, 10, 20));
+        setBorder(new EmptyBorder(BORDER_TOP, BORDER_LEFT, BORDER_BOTTOM, BORDER_RIGHT));
         setBackground(Color.WHITE);
         setLayout(new BorderLayout());
     }
@@ -77,7 +85,7 @@ public class CardPanel extends JPanel implements Scrollable {
     private void generateBodyTemplate1(Title title, String content) {
         JPanel titlePanel = new JPanel(new GridLayout(0, 1));
         titlePanel.setBackground(Color.WHITE);
-        titlePanel.setBorder(new EmptyBorder(0, 0, 15, 0));
+        titlePanel.setBorder(new EmptyBorder(0, 0, TITLE_BOTTOM_PADDING, 0));
 
         JTextArea mainTitle = new JTextArea(title.getMainTitle());
         mainTitle.setEditable(false);
@@ -92,8 +100,8 @@ public class CardPanel extends JPanel implements Scrollable {
         JTextArea textField = new JTextArea(content);
         textField.setLineWrap(true);
         textField.setWrapStyleWord(true);
-        textField.setFont(new Font(defaultFont.getFamily(), Font.PLAIN, Math.round(defaultFont
-                .getSize() * 1.2f)));
+        textField.setFont(new Font(defaultFont.getFamily(), Font.PLAIN,
+                Math.round(defaultFont.getSize() * FONT_SCALE)));
         textField.setEditable(false);
 
         add(titlePanel, BorderLayout.PAGE_START);
@@ -128,12 +136,12 @@ public class CardPanel extends JPanel implements Scrollable {
 
     @Override
     public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-        return 16;
+        return SCROLLABLE_INCREMENT;
     }
 
     @Override
     public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-        return 16;
+        return SCROLLABLE_INCREMENT;
     }
 
     @Override

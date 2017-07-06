@@ -461,10 +461,24 @@ public class AVSClient implements ConnectionListener {
      *
      * @param accessToken
      */
-    public void setAccessToken(String accessToken) {
+
+    private static void setAccessTokenValue(String accessToken){
         AVSClient.accessToken = accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        setAccessTokenValue(accessToken);
         startRequestThread();
         startDownchannelThread();
+    }
+
+    public void revokeAccessToken() {
+        setAccessTokenValue("");
+        stopDownchannelThread();
+    }
+
+    private static void cacheAccessToken(String accessToken) {
+        AVSClient.accessToken = accessToken;
     }
 
     void startRequestThread() {
@@ -474,12 +488,15 @@ public class AVSClient implements ConnectionListener {
     }
 
     void startDownchannelThread() {
+        stopDownchannelThread();
+        downchannelThread = new DownchannelRequestThread();
+        downchannelThread.start();
+    }
+
+    void stopDownchannelThread() {
         if (downchannelThread != null) {
             downchannelThread.shutdownGracefully();
         }
-
-        downchannelThread = new DownchannelRequestThread();
-        downchannelThread.start();
     }
 
     /**

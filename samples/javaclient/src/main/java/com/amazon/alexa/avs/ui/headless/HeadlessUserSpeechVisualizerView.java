@@ -10,38 +10,28 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.amazon.alexa.avs.ui;
+package com.amazon.alexa.avs.ui.headless;
 
-import com.amazon.alexa.avs.RecordingRMSListener;
+import com.amazon.alexa.avs.ui.UserSpeechVisualizerUIHandler;
 
-import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
-
-public class UserSpeechVisualizerView extends JProgressBar implements SpeechStateChangeListener,
-        RecordingRMSListener {
-
-    public UserSpeechVisualizerView() {
-        super(0, 100);
-    }
+public class HeadlessUserSpeechVisualizerView implements UserSpeechVisualizerUIHandler {
 
     @Override
     public void onProcessing() {
-        SwingUtilities.invokeLater(() -> setIndeterminate(true));
+        System.out.println("Processing");
     }
 
     @Override
     public void onListening() {
-        // No-op
+        System.out.println("Listening");
     }
 
     @Override
     public void onProcessingFinished() {
-        SwingUtilities.invokeLater(() -> setIndeterminate(false));
+        System.out.println("Done");
     }
 
     @Override
-    public void rmsChanged(int rms) { // AudioRMSListener callback
-        // update the visualizer
-        SwingUtilities.invokeLater(() -> setValue(rms));
+    public void rmsChanged(int rms) {
     }
 }

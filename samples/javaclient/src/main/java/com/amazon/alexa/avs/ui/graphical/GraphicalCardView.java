@@ -10,9 +10,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.amazon.alexa.avs.ui;
+package com.amazon.alexa.avs.ui.graphical;
 
-import com.amazon.alexa.avs.message.response.templateruntime.CardHandler;
 import com.amazon.alexa.avs.message.response.templateruntime.RenderTemplate;
 
 import java.awt.Color;
@@ -23,7 +22,9 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 
-public class CardView extends JPanel implements CardHandler, SpeechStateChangeListener {
+import com.amazon.alexa.avs.ui.CardUIHandler;
+
+public class GraphicalCardView extends JPanel implements CardUIHandler {
 
     private static final int CARD_WIDTH = 400;
     private static final int CARD_HEIGHT = 300;
@@ -31,7 +32,7 @@ public class CardView extends JPanel implements CardHandler, SpeechStateChangeLi
 
     private CardPanel cardPanel;
 
-    public CardView() {
+    GraphicalCardView() {
         super();
         this.cardPanel = new CardPanel();
         JScrollPane cardContainer = new JScrollPane(this.cardPanel);

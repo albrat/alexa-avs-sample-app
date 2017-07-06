@@ -26,6 +26,7 @@ import com.amazon.alexa.avs.message.request.audioplayer.PlaybackFailedPayload.Er
 import com.amazon.alexa.avs.message.request.audioplayer.PlaybackStutterFinishedPayload;
 import com.amazon.alexa.avs.message.request.context.AlertsStatePayload;
 import com.amazon.alexa.avs.message.request.context.ComponentState;
+import com.amazon.alexa.avs.message.request.context.NotificationsStatePayload;
 import com.amazon.alexa.avs.message.request.context.PlaybackStatePayload;
 import com.amazon.alexa.avs.message.request.context.SpeechStatePayload;
 import com.amazon.alexa.avs.message.request.context.VolumeStatePayload;
@@ -264,11 +265,12 @@ public class RequestFactory {
 
     public static RequestBody createSystemSynchronizeStateEvent(PlaybackStatePayload playerState,
             SpeechStatePayload speechState, AlertsStatePayload alertState,
-            VolumeStatePayload volumeState) {
+            VolumeStatePayload volumeState, NotificationsStatePayload notificationsState) {
         Header header = new MessageIdHeader(AVSAPIConstants.System.NAMESPACE,
                 AVSAPIConstants.System.Events.SynchronizeState.NAME);
         Event event = new Event(header, new Payload());
-        return createRequestWithStates(event, playerState, speechState, alertState, volumeState);
+        return createRequestWithStates(event, playerState, speechState, alertState, volumeState,
+                notificationsState);
     }
 
     public static RequestBody createSystemExceptionEncounteredEvent(String directiveJson,
